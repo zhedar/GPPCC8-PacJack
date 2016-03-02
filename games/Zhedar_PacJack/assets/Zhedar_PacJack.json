@@ -1,0 +1,44 @@
+{"frames": [
+
+{
+	"filename": "brick.png",
+	"frame": {"x":0,"y":0,"w":20,"h":20},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":20,"h":20},
+	"sourceSize": {"w":20,"h":20}
+},
+{
+	"filename": "jack.png",
+	"frame": {"x":20,"y":0,"w":16,"h":14},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":16,"h":14},
+	"sourceSize": {"w":16,"h":14}
+},
+{
+	"filename": "pacman1.png",
+	"frame": {"x":36,"y":0,"w":20,"h":20},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":20,"h":20},
+	"sourceSize": {"w":20,"h":20}
+},
+{
+	"filename": "pacman2.png",
+	"frame": {"x":56,"y":0,"w":20,"h":20},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":20,"h":20},
+	"sourceSize": {"w":20,"h":20}
+}],
+"meta": {
+	"app": "http://www.codeandweb.com/texturepacker",
+	"version": "1.0",
+	"image": "Zhedar_PacJack.png",
+	"format": "RGBA8888",
+	"size": {"w":76,"h":20},
+	"scale": "1",
+	"smartupdate": "$TexturePacker:SmartUpdate:00d302544c0811cf453c668ed8bb3b07:a081a678b341afa78efcb7c6fd6d556e:c643729bbd29ec7429c9c76ba2a89fbd$"
+}
+}
