@@ -1,36 +1,6 @@
-/*
-Hallo!
-Das hir ist deine Spielevorlage!
-Ich hoffe, ich habe alles gut genug dokumentiert.
-
-Alles was hier MyGame heißt musst du umbennen in etwas sehr
-individuelles. So wie KotzeMannGRKDM
-Die wirren Buchstaben können wichtig sein, falls jemand anderes
-auch KotzeMann entwickelt!
-
-WICHTIG
-
-Wenn dein Spiel geschafft ist, dann rufe
-
-onVictory();
-
-auf! Später wird da dann ein richtiger Gewonnenbildschrim erscheinen!
-
-Wenn man in deinem Spiel verliert dann rufe
-
-onLose()
-
-auf, dardurch wird dein Spiel neugestartet.
-
-Wärend du an deinem Spiel arbeitest, arbeite ich am Drumherum.
-So dass es dann alles auch supi aussieht!
-*/
-
 JackDanger.Zhedar_PacJack = function() {
-
 };
 
-//hier musst du deine Eintragungen vornhemen.
 addMyGame("Zhedar_PacJack", "PacJack", "Zhedar", "Get the girl!", JackDanger.Zhedar_PacJack);
 
 
@@ -45,9 +15,6 @@ JackDanger.Zhedar_PacJack.prototype.preload = function() {
     this.id = currentGameData.id;
 
     this.load.atlas(this.id);
-
-    //this.load.image('games/' + currentGameData.id + '/assets/', "jack.png");
-    //this.load.image('games/' + currentGameData.id + '/assets/', "brick.png");
 }
 
 //wird nach dem laden gestartet
@@ -63,24 +30,36 @@ JackDanger.Zhedar_PacJack.prototype.update = function() {
     var dt = this.time.physicsElapsedMS * 0.001;
 
     this.playerControlls(dt);
-    this.game.physics.arcade.collide(this.player, this.bricks, this.collisionHandler, null, this);
-    this.game.physics.arcade.collide(this.player, this.mobs, this.collisionHandler2, null, this);
-    this.game.physics.arcade.collide(this.mobs, this.bricks, this.collisionHandler, null, this);
-
+    this.doCollision();
+    this.updateEnergy();
     this.movePacman();
-
-    //this.updateTime(dt);
 }
 
 
 JackDanger.Zhedar_PacJack.prototype.addStuff = function(dt) {
+    game.physics.startSystem(Phaser.Physics.ARCADE);
+    game.physics.arcade.gravity.y = 0;
+
+    this.createWorld();
+    this.player.maxEnergy = 2000;
+    this.player.energy = this.player.maxEnergy/2;
+
+    var timer = game.time.create(false);
+    timer.loop(500, this.animatePacman, this);
+    timer.start();
+
+    this.player.anchor.setTo(.5,.5);
+
+    //game.physics.arcade.enable(game.world, true);
+
+    this.energyText = game.add.bitmapText(100, 10, "testfont", "Energie: " + this.player.energy, 30);
+    this.energyText.anchor.set(0.5);
+}
+
+JackDanger.Zhedar_PacJack.prototype.createWorld = function() {
     var playerObj = {type:"player"}; 
     var brickObj  = {type:"brick"};
     var pacmanObj = {type:"pacman"};
-
-
-    game.physics.startSystem(Phaser.Physics.ARCADE);
-    game.physics.arcade.gravity.y = 0;
 
     this.bricks = game.add.group();
     this.mobs = game.add.group();
@@ -106,7 +85,6 @@ JackDanger.Zhedar_PacJack.prototype.addStuff = function(dt) {
         this.world[0][i] = brickObj;
         this.world[39][i] = brickObj;
     }
-
 
     for(i=0; i < this.world.length; i++)
         for(j=0; j < this.world[i].length; j++) {
@@ -135,26 +113,19 @@ JackDanger.Zhedar_PacJack.prototype.addStuff = function(dt) {
                     break;
             }
         }
-
-    var timer = game.time.create(false);
-    timer.loop(500, this.animatePacman, this);
-    timer.start();
-
-    this.player.anchor.setTo(.5,.5);
-
-    //game.physics.arcade.enable(game.world, true);
-
-    //this.timeText = game.add.bitmapText(game.width / 2, 20, "testfont", "", 30);
-    //this.timeText.anchor.set(0.5);
-
-    //this.timeLeft = 60*3;
 }
 
-JackDanger.Zhedar_PacJack.prototype.updateTime = function(dt) {
-    this.timeLeft -= dt;
-    this.timeText.setText("noch " + this.timeLeft.toFixed(1) + " verbleiben!");
+JackDanger.Zhedar_PacJack.prototype.doCollision = function() {
+    this.game.physics.arcade.collide(this.player, this.bricks, this.collisionHandler, null, this);
+    this.game.physics.arcade.collide(this.player, this.mobs,  this.collisionHandler2, null, this);
+    this.game.physics.arcade.collide(this.mobs,   this.bricks, this.collisionHandler, null, this);
+}
 
-    if (this.timeLeft <= 0) onVictory();
+JackDanger.Zhedar_PacJack.prototype.updateEnergy = function() {
+    if(this.player.energy < this.player.maxEnergy)
+        this.player.energy ++;
+
+    this.energyText.setText("Energie: " + this.player.energy);
 }
 
 JackDanger.Zhedar_PacJack.prototype.animatePacman = function() {
@@ -189,9 +160,14 @@ JackDanger.Zhedar_PacJack.prototype.collisionHandler2 = function(obj1, obj2) {
     onLose();
 }
 
-
 JackDanger.Zhedar_PacJack.prototype.playerControlls = function(dt) {
     var speed = 200;
+
+    if(Pad.isDown(Pad.JUMP) && this.player.energy > 10) {
+        this.player.energy-=10;
+        speed*=2;
+    }
+
     if (Pad.isDown(Pad.LEFT)) {
         this.player.body.velocity.x = -1*speed;
         this.player.body.velocity.y = 0;
