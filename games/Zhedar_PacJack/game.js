@@ -66,6 +66,7 @@ JackDanger.Zhedar_PacJack.prototype.update = function() {
     this.game.physics.arcade.collide(this.player, this.bricks, this.collisionHandler, null, this);
     this.game.physics.arcade.collide(this.player, this.mobs, this.collisionHandler2, null, this);
     this.game.physics.arcade.collide(this.mobs, this.bricks, this.collisionHandler, null, this);
+
     //this.updateTime(dt);
 }
 
@@ -136,6 +137,8 @@ JackDanger.Zhedar_PacJack.prototype.addStuff = function(dt) {
     timer.loop(500, this.animatePacman, this);
     timer.start();
 
+    this.player.anchor.setTo(.5,.5);
+
     //game.physics.arcade.enable(game.world, true);
 
     //this.timeText = game.add.bitmapText(game.width / 2, 20, "testfont", "", 30);
@@ -157,8 +160,12 @@ JackDanger.Zhedar_PacJack.prototype.animatePacman = function() {
     else
         this.counter++;
 
+    var player =  this.player;
     var counter = this.counter;
-    this.mobs.forEach(function(sprite){sprite.frameName = "pacman" + counter + ".png"});
+    this.mobs.forEach(function(sprite) {
+        sprite.frameName = "pacman" + counter + ".png";
+        sprite.rotation = game.physics.arcade.angleBetween(sprite, player);
+    });
 }
 
 
@@ -173,21 +180,26 @@ JackDanger.Zhedar_PacJack.prototype.collisionHandler2 = function(obj1, obj2) {
 
 
 JackDanger.Zhedar_PacJack.prototype.playerControlls = function(dt) {
+    var speed = 200;
     if (Pad.isDown(Pad.LEFT)) {
-        this.player.body.velocity.x = -200;
+        this.player.body.velocity.x = -1*speed;
         this.player.body.velocity.y = 0;
+        this.player.angle= 90;
     }
     else if (Pad.isDown(Pad.RIGHT)) {
-        this.player.body.velocity.x = 200;
+        this.player.body.velocity.x = speed;
         this.player.body.velocity.y = 0;
+        this.player.angle = 270;
     }
     else if (Pad.isDown(Pad.UP)) {
-         this.player.body.velocity.y = -200;
+        this.player.body.velocity.y = -1*speed;
         this.player.body.velocity.x = 0;
+        this.player.angle = 180;
     }
     else if (Pad.isDown(Pad.DOWN)) {
-         this.player.body.velocity.y = 200;
+         this.player.body.velocity.y = speed;
          this.player.body.velocity.x = 0;
+         this.player.angle = 0;
     }
     else {
         this.player.body.velocity.y = 0;
