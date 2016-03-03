@@ -11,6 +11,7 @@ JackDanger.Zhedar_PacJack.prototype.init = function() {
 
 JackDanger.Zhedar_PacJack.prototype.preload = function() {
     this.load.path = 'games/' + currentGameData.id + '/assets/';//nicht anfassen
+    game.load.json('world', '/world.json');
     
     this.id = currentGameData.id;
 
@@ -66,9 +67,11 @@ JackDanger.Zhedar_PacJack.prototype.createWorld = function() {
 
     this.counter = 1;
 
+    this.world = game.cache.getJSON('world');
+
     //create world model
-    this.world = new Array(40)
-    for(i=0; i < this.world.length; i++)
+    /*this.world = new Array(40)
+    for(i=0; i < c; i++)
         this.world[i] = new Array(22);
 
     this.world[5][5] = playerObj;
@@ -84,12 +87,12 @@ JackDanger.Zhedar_PacJack.prototype.createWorld = function() {
     for(i=0; i < 22; i++) {
         this.world[0][i] = brickObj;
         this.world[39][i] = brickObj;
-    }
+    }*/
 
     for(i=0; i < this.world.length; i++)
         for(j=0; j < this.world[i].length; j++) {
             var entity = this.world[i][j];
-            if(typeof entity === 'undefined')
+            if(typeof entity === 'undefined' || entity == null)
                 continue;
 
             switch(entity.type) {
