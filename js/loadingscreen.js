@@ -9,6 +9,6 @@ JackDanger.LoadingScreen.prototype = {
 	},
 
 	remove: function() {
-		this.jack.kill();
+		//this.jack.kill();
 	}
 }
