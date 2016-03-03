@@ -67,6 +67,8 @@ JackDanger.Zhedar_PacJack.prototype.update = function() {
     this.game.physics.arcade.collide(this.player, this.mobs, this.collisionHandler2, null, this);
     this.game.physics.arcade.collide(this.mobs, this.bricks, this.collisionHandler, null, this);
 
+    this.movePacman();
+
     //this.updateTime(dt);
 }
 
@@ -127,6 +129,7 @@ JackDanger.Zhedar_PacJack.prototype.addStuff = function(dt) {
                     break;
                 case "pacman":
                     var pacmanSprite = this.add.sprite(i*20, j*20, this.id, "pacman1.png");
+                        pacmanSprite.anchor.setTo(.5,.5);
                     game.physics.enable(pacmanSprite, Phaser.Physics.ARCADE);
                     this.mobs.add(pacmanSprite);
                     break;
@@ -164,8 +167,16 @@ JackDanger.Zhedar_PacJack.prototype.animatePacman = function() {
     var counter = this.counter;
     this.mobs.forEach(function(sprite) {
         sprite.frameName = "pacman" + counter + ".png";
-        sprite.rotation = game.physics.arcade.angleBetween(sprite, player);
     });
+}
+
+JackDanger.Zhedar_PacJack.prototype.movePacman = function () {
+    var player =  this.player;
+    this.mobs.forEach(function(sprite) {
+        sprite.rotation = game.physics.arcade.angleBetween(sprite, player);
+        game.physics.arcade.moveToObject(sprite, player, 120);
+    });
+
 }
 
 
