@@ -49,7 +49,6 @@ JackDanger.Zhedar_PacJack.prototype.addStuff = function() {
         var brickSprite = this.game.add.sprite(x*20,y*20, this.id, "brick.png");
             game.physics.enable(brickSprite, Phaser.Physics.ARCADE);
             brickSprite.body.immovable = true;
-            console.log(brickSprite)
             brickSprite.body.collideWorldBounds = true;
             this.bricks.add(brickSprite);
     }, this, 0);
@@ -155,64 +154,63 @@ JackDanger.Zhedar_PacJack.prototype.checkPath = function() {
     if (path) {
         currentNextPointX = path[1].x;
         currentNextPointY = path[1].y;
-                        
+        var speed = 150;
         if (currentNextPointX < pacmanX && currentNextPointY < pacmanY) {
            // left up
-            pacman.body.velocity.x = -75;
-            pacman.body.velocity.y = -75;                 
-            enemyDirection = "NW";
+            pacman.body.velocity.x = -1 * speed / 2;
+            pacman.body.velocity.y = -1 * speed / 2;
+            pacman.angle = 225;
+            pacman.scale.y = -1; 
         }
         if (currentNextPointX == pacmanX && currentNextPointY < pacmanY) {
            // up
-           pacman.body.velocity.y = -150;
-           pacman.body.velocity.x = 0;     
-           enemyDirection = "N";            
+           pacman.body.velocity.y = -1 * speed;
+           pacman.body.velocity.x = 0; 
+           pacman.angle = 270;          
         }
         else if (currentNextPointX > pacmanX && currentNextPointY < pacmanY) {
             // right up
-            pacman.body.velocity.x = 75;
-            pacman.body.velocity.y = -75;              
-            enemyDirection = "NE";                
+            pacman.body.velocity.x = speed / 2;
+            pacman.body.velocity.y = -1 * speed / 2;
+            pacman.angle = 315;
+            pacman.scale.y = 1;               
        }
        else if (currentNextPointX < pacmanX && currentNextPointY == pacmanY) {
             // left                      
-            pacman.body.velocity.x = -150;
-            pacman.body.velocity.y = 0;               
-            enemyDirection = "W";                  
+            pacman.body.velocity.x = -1 * speed;
+            pacman.body.velocity.y = 0;   
+            pacman.angle = 180;
+            pacman.scale.y = -1;                
        }
        else if (currentNextPointX > pacmanX && currentNextPointY == pacmanY) {
             // right
-            pacman.body.velocity.x = 150;  
-            pacman.body.velocity.y = 0;               
-            enemyDirection = "E";    
+            pacman.body.velocity.x = speed;  
+            pacman.body.velocity.y = 0;   
+            pacman.angle = 0;
+            pacman.scale.y = 1;   
        }
        else if (currentNextPointX > pacmanX && currentNextPointY > pacmanY) {
             // right down
-            pacman.body.velocity.x = 75;
-            pacman.body.velocity.y = 75;               
-            enemyDirection = "SE";                
+            pacman.body.velocity.x = speed / 2;
+            pacman.body.velocity.y = speed / 2; 
+            pacman.angle = 45;
+            pacman.scale.y = 1;              
        }
        else if (currentNextPointX == pacmanX && currentNextPointY > pacmanY) {
             // down
-            pacman.body.velocity.y = 150;  
-            pacman.body.velocity.x = 0;                 
-            enemyDirection = "S";
-                            
+            pacman.body.velocity.y = speed;  
+            pacman.body.velocity.x = 0;
+            pacman.angle = 90;                          
        }
        else if (currentNextPointX < pacmanX && currentNextPointY > pacmanY) {
             // left down
-            pacman.body.velocity.x = -75;
-            pacman.body.velocity.y = 75;
-            enemyDirection = "SW";              
-       }
-       else
-       {                
-            enemyDirection = "STOP";        
+            pacman.body.velocity.x = -1 * speed / 2;
+            pacman.body.velocity.y = speed / 2;
+            pacman.angle = 135;
+            pacman.scale.y = -1;           
        }
     }
     });
-
-    pacman.rotation = game.physics.arcade.angleBetween(pacman, this.player);
     
     this.easystar.calculate();
 }
