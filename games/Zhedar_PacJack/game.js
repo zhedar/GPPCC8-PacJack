@@ -134,19 +134,25 @@ JackDanger.Zhedar_PacJack.prototype.createWorld = function() {
     this.easystar.setGrid(this.walkableWorld);
     this.easystar.setAcceptableTiles([1]);
     this.easystar.enableDiagonals();
+    this.easystar.enableCornerCutting()
 
     //console.log(JSON.stringify(this.world));
 }
 
 JackDanger.Zhedar_PacJack.prototype.checkPath = function() {
-    var pacmanX = Math.floor(this.pacman.body.x/20),
-        pacmanY = Math.floor(this.pacman.body.y/20),
-        playerX = Math.floor(this.player.body.x/20),
-        playerY =  Math.floor(this.player.body.y/20);
+    if(Math.random()<.5)
+        var funct = Math.floor;
+    else
+        var funct = Math.ceil;
+
+    //var funct = Math.floor;
+    var pacmanX = funct(this.pacman.body.x/20 ),
+        pacmanY = funct(this.pacman.body.y/20),
+        playerX = funct(this.player.body.x/20),
+        playerY = funct(this.player.body.y/20);
 
     var pacman = this.pacman;
     var walk = this.walkableWorld;
-    //console.log(playerX + " "+ playerY + " " + this.walkableWorld[playerX][playerY]);
 
     this.easystar.findPath(pacmanX, pacmanY, playerX, playerY, function( path ) {
 
