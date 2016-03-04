@@ -31,15 +31,13 @@ JackDanger.Zhedar_PacJack.prototype.create = function() {
 
 //wird jeden Frame aufgerufen
 JackDanger.Zhedar_PacJack.prototype.update = function() {
-    var dt = this.time.physicsElapsedMS * 0.001;
-
-    this.playerControlls(dt);
+    this.playerControls();
     this.doCollision();
     this.updateEnergy();
     //this.movePacman();
 }
 
-JackDanger.Zhedar_PacJack.prototype.addStuff = function(dt) {
+JackDanger.Zhedar_PacJack.prototype.addStuff = function() {
     var world = this.world;
 
     game.input.activePointer.leftButton.onDown.add(function() {
@@ -306,7 +304,7 @@ JackDanger.Zhedar_PacJack.prototype.collisionHandler2 = function(obj1, obj2) {
     //onLose();
 }
 
-JackDanger.Zhedar_PacJack.prototype.playerControlls = function(dt) {
+JackDanger.Zhedar_PacJack.prototype.playerControls = function() {
     var speed = 200;
 
     if(Pad.isDown(Pad.JUMP) && this.player.energy > 10) {
