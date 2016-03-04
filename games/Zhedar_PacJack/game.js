@@ -37,7 +37,6 @@ JackDanger.Zhedar_PacJack.prototype.update = function() {
     this.doCollision();
     this.updateEnergy();
     //this.movePacman();
-    this.checkPath();
 }
 
 JackDanger.Zhedar_PacJack.prototype.addStuff = function(dt) {
@@ -76,6 +75,10 @@ JackDanger.Zhedar_PacJack.prototype.addStuff = function(dt) {
 
     this.energyText = game.add.bitmapText(100, 10, "testfont", "Energie: " + this.player.energy, 30);
     this.energyText.anchor.set(0.5);
+
+    var checkPathTimer = game.time.create(false);
+    checkPathTimer.loop(50, this.checkPath, this);
+    checkPathTimer.start();
 }
 
 JackDanger.Zhedar_PacJack.prototype.createWorld = function() {
