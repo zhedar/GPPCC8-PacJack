@@ -38,22 +38,7 @@ JackDanger.Zhedar_PacJack.prototype.update = function() {
 }
 
 JackDanger.Zhedar_PacJack.prototype.addStuff = function() {
-    var world = this.world;
-
-    game.input.activePointer.leftButton.onDown.add(function() {
-        var x = Math.floor(game.input.worldX/20);
-        var y = Math.floor(game.input.worldY/20);
-        this.world[x][y] = {type:"brick"};
-        console.log(JSON.stringify(this.world));
-        console.log(this.id);
-        var brickSprite = this.game.add.sprite(x*20,y*20, this.id, "brick.png");
-            game.physics.enable(brickSprite, Phaser.Physics.ARCADE);
-            brickSprite.body.immovable = true;
-            brickSprite.body.collideWorldBounds = true;
-            this.bricks.add(brickSprite);
-    }, this, 0);
-    
-   
+    this.counter = 1;
 
     game.physics.startSystem(Phaser.Physics.ARCADE);
     game.physics.arcade.gravity.y = 0;
@@ -67,8 +52,6 @@ JackDanger.Zhedar_PacJack.prototype.addStuff = function() {
     timer.start();
 
     this.player.anchor.setTo(.5,.5);
-
-    //game.physics.arcade.enable(game.world, true);
 
     this.energyText = game.add.bitmapText(100, 10, "testfont", "Energie: " + this.player.energy, 30);
     this.energyText.anchor.set(0.5);
@@ -87,9 +70,8 @@ JackDanger.Zhedar_PacJack.prototype.createWorld = function() {
     this.bricks = game.add.group();
     this.mobs = game.add.group();
 
-    this.counter = 1;
-
     this.world = game.cache.getJSON('world');
+
     this.walkableWorld = new Array(this.world[0].length)
     for(i=0; i < this.world[0].length; i++)
         this.walkableWorld[i] = new Array(this.world.length);
@@ -143,73 +125,73 @@ JackDanger.Zhedar_PacJack.prototype.checkPath = function() {
     var pacman = this.pacman;
 
     this.easystar.findPath(pacmanX, pacmanY, playerX, playerY, function( path ) {
-
-    if (path === null) {
-        console.log("The path to the destination point was not found.");
-        pacman.body.velocity.x = 0;
-        pacman.body.velocity.y = 0;   
-        return;
-    }
-                        
-    if (path) {
-        currentNextPointX = path[1].x;
-        currentNextPointY = path[1].y;
-        var speed = 150;
-        if (currentNextPointX < pacmanX && currentNextPointY < pacmanY) {
-           // left up
-            pacman.body.velocity.x = -1 * speed / 2;
-            pacman.body.velocity.y = -1 * speed / 2;
-            pacman.angle = 225;
-            pacman.scale.y = -1; 
-        }
-        if (currentNextPointX == pacmanX && currentNextPointY < pacmanY) {
-           // up
-           pacman.body.velocity.y = -1 * speed;
-           pacman.body.velocity.x = 0; 
-           pacman.angle = 270;          
-        }
-        else if (currentNextPointX > pacmanX && currentNextPointY < pacmanY) {
-            // right up
-            pacman.body.velocity.x = speed / 2;
-            pacman.body.velocity.y = -1 * speed / 2;
-            pacman.angle = 315;
-            pacman.scale.y = 1;               
-       }
-       else if (currentNextPointX < pacmanX && currentNextPointY == pacmanY) {
-            // left                      
-            pacman.body.velocity.x = -1 * speed;
-            pacman.body.velocity.y = 0;   
-            pacman.angle = 180;
-            pacman.scale.y = -1;                
-       }
-       else if (currentNextPointX > pacmanX && currentNextPointY == pacmanY) {
-            // right
-            pacman.body.velocity.x = speed;  
-            pacman.body.velocity.y = 0;   
-            pacman.angle = 0;
-            pacman.scale.y = 1;   
-       }
-       else if (currentNextPointX > pacmanX && currentNextPointY > pacmanY) {
-            // right down
-            pacman.body.velocity.x = speed / 2;
-            pacman.body.velocity.y = speed / 2; 
-            pacman.angle = 45;
-            pacman.scale.y = 1;              
-       }
-       else if (currentNextPointX == pacmanX && currentNextPointY > pacmanY) {
-            // down
-            pacman.body.velocity.y = speed;  
+        if (path === null) {
+            console.log("The path to the destination point was not found.");
             pacman.body.velocity.x = 0;
-            pacman.angle = 90;                          
-       }
-       else if (currentNextPointX < pacmanX && currentNextPointY > pacmanY) {
-            // left down
-            pacman.body.velocity.x = -1 * speed / 2;
-            pacman.body.velocity.y = speed / 2;
-            pacman.angle = 135;
-            pacman.scale.y = -1;           
-       }
-    }
+            pacman.body.velocity.y = 0;   
+            return;
+        }
+                            
+        if (path) {
+            currentNextPointX = path[1].x;
+            currentNextPointY = path[1].y;
+
+            var speed = 150;
+            if (currentNextPointX < pacmanX && currentNextPointY < pacmanY) {
+               // left up
+                pacman.body.velocity.x = -1 * speed / 2;
+                pacman.body.velocity.y = -1 * speed / 2;
+                pacman.angle = 225;
+                pacman.scale.y = -1; 
+            }
+            if (currentNextPointX == pacmanX && currentNextPointY < pacmanY) {
+               // up
+               pacman.body.velocity.y = -1 * speed;
+               pacman.body.velocity.x = 0; 
+               pacman.angle = 270;          
+            }
+            else if (currentNextPointX > pacmanX && currentNextPointY < pacmanY) {
+                // right up
+                pacman.body.velocity.x = speed / 2;
+                pacman.body.velocity.y = -1 * speed / 2;
+                pacman.angle = 315;
+                pacman.scale.y = 1;               
+           }
+           else if (currentNextPointX < pacmanX && currentNextPointY == pacmanY) {
+                // left                      
+                pacman.body.velocity.x = -1 * speed;
+                pacman.body.velocity.y = 0;   
+                pacman.angle = 180;
+                pacman.scale.y = -1;                
+           }
+           else if (currentNextPointX > pacmanX && currentNextPointY == pacmanY) {
+                // right
+                pacman.body.velocity.x = speed;  
+                pacman.body.velocity.y = 0;   
+                pacman.angle = 0;
+                pacman.scale.y = 1;   
+           }
+           else if (currentNextPointX > pacmanX && currentNextPointY > pacmanY) {
+                // right down
+                pacman.body.velocity.x = speed / 2;
+                pacman.body.velocity.y = speed / 2; 
+                pacman.angle = 45;
+                pacman.scale.y = 1;              
+           }
+           else if (currentNextPointX == pacmanX && currentNextPointY > pacmanY) {
+                // down
+                pacman.body.velocity.y = speed;  
+                pacman.body.velocity.x = 0;
+                pacman.angle = 90;                          
+           }
+           else if (currentNextPointX < pacmanX && currentNextPointY > pacmanY) {
+                // left down
+                pacman.body.velocity.x = -1 * speed / 2;
+                pacman.body.velocity.y = speed / 2;
+                pacman.angle = 135;
+                pacman.scale.y = -1;           
+           }
+        }
     });
     
     this.easystar.calculate();
@@ -293,4 +275,19 @@ JackDanger.Zhedar_PacJack.prototype.playerControls = function() {
         this.player.body.velocity.y = 0;
         this.player.body.velocity.x = 0;
     }
+}
+
+JackDanger.Zhedar_PacJack.prototype.addWorldEdit = function() {
+    game.input.activePointer.leftButton.onDown.add(function() {
+        var x = Math.floor(game.input.worldX/20);
+        var y = Math.floor(game.input.worldY/20);
+        this.world[x][y] = {type:"brick"};
+        console.log(JSON.stringify(this.world));
+        
+        var brickSprite = this.game.add.sprite(x*20,y*20, this.id, "brick.png");
+            game.physics.enable(brickSprite, Phaser.Physics.ARCADE);
+            brickSprite.body.immovable = true;
+            brickSprite.body.collideWorldBounds = true;
+            this.bricks.add(brickSprite);
+    }, this, 0);
 }
