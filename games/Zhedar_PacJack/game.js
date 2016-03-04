@@ -74,12 +74,13 @@ JackDanger.Zhedar_PacJack.prototype.addStuff = function() {
     this.energyText = game.add.bitmapText(100, 10, "testfont", "Energie: " + this.player.energy, 30);
     this.energyText.anchor.set(0.5);
 
+    this.roundingFunct = Math.floor;
     var checkPathTimer = game.time.create(false);
     checkPathTimer.loop(50, this.checkPath, this);
     checkPathTimer.start();
 }
 
-JackDanger.Zhedar_PacJack.prototype.createWorld = function() {
+JackDanger.Zhedar_PacJack.prototype.createWorld = function() { 
     var playerObj = {type:"player"}; 
     var brickObj  = {type:"brick"};
     var pacmanObj = {type:"pacman"};
@@ -90,7 +91,6 @@ JackDanger.Zhedar_PacJack.prototype.createWorld = function() {
     this.counter = 1;
 
     this.world = game.cache.getJSON('world');
-    console.log(this.world[0].length + " - " + this.world.length);
     this.walkableWorld = new Array(this.world[0].length)
     for(i=0; i < this.world[0].length; i++)
         this.walkableWorld[i] = new Array(this.world.length);
@@ -133,125 +133,83 @@ JackDanger.Zhedar_PacJack.prototype.createWorld = function() {
     this.easystar.setAcceptableTiles([1]);
     this.easystar.enableDiagonals();
     this.easystar.enableCornerCutting()
-
-    //console.log(JSON.stringify(this.world));
 }
 
 JackDanger.Zhedar_PacJack.prototype.checkPath = function() {
-    if(Math.random()<.5)
-        var funct = Math.floor;
-    else
-        var funct = Math.ceil;
-
-    //var funct = Math.floor;
-    var pacmanX = funct(this.pacman.body.x/20 ),
-        pacmanY = funct(this.pacman.body.y/20),
-        playerX = funct(this.player.body.x/20),
-        playerY = funct(this.player.body.y/20);
+    var pacmanX = this.roundingFunct(this.pacman.body.x/20 ),
+        pacmanY = this.roundingFunct(this.pacman.body.y/20),
+        playerX = this.roundingFunct(this.player.body.x/20),
+        playerY = this.roundingFunct(this.player.body.y/20);
 
     var pacman = this.pacman;
-    var walk = this.walkableWorld;
 
     this.easystar.findPath(pacmanX, pacmanY, playerX, playerY, function( path ) {
 
     if (path === null) {
         console.log("The path to the destination point was not found.");
-    } 
+        pacman.body.velocity.x = 0;
+        pacman.body.velocity.y = 0;   
+        return;
+    }
                         
     if (path) {
         currentNextPointX = path[1].x;
         currentNextPointY = path[1].y;
-    }
-
                         
-         if (currentNextPointX < pacmanX && currentNextPointY < pacmanY) {
+        if (currentNextPointX < pacmanX && currentNextPointY < pacmanY) {
            // left up
-                            
-           console.log("GO LEFT UP");
             pacman.body.velocity.x = -75;
             pacman.body.velocity.y = -75;                 
-           enemyDirection = "NW";
+            enemyDirection = "NW";
         }
-        if (currentNextPointX == pacmanX && currentNextPointY < pacmanY)
-        {
+        if (currentNextPointX == pacmanX && currentNextPointY < pacmanY) {
            // up
-                            
-           console.log("GO UP");
            pacman.body.velocity.y = -150;
-           pacman.body.velocity.x = 0;
-                          
-           enemyDirection = "N";
-                            
+           pacman.body.velocity.x = 0;     
+           enemyDirection = "N";            
         }
-        else if (currentNextPointX > pacmanX && currentNextPointY < pacmanY)
-        {
-           // right up
-                            
-           console.log("GO RIGHT UP");
+        else if (currentNextPointX > pacmanX && currentNextPointY < pacmanY) {
+            // right up
             pacman.body.velocity.x = 75;
-            pacman.body.velocity.y = -75;
-          
-                            
-           enemyDirection = "NE";
-                            
+            pacman.body.velocity.y = -75;              
+            enemyDirection = "NE";                
        }
-       else if (currentNextPointX < pacmanX && currentNextPointY == pacmanY)
-       {
-          // left                      
-            console.log("GO LEFT");
+       else if (currentNextPointX < pacmanX && currentNextPointY == pacmanY) {
+            // left                      
             pacman.body.velocity.x = -150;
-            pacman.body.velocity.y = 0; 
-                            
-           enemyDirection = "W";
+            pacman.body.velocity.y = 0;               
+            enemyDirection = "W";                  
+       }
+       else if (currentNextPointX > pacmanX && currentNextPointY == pacmanY) {
+            // right
+            pacman.body.velocity.x = 150;  
+            pacman.body.velocity.y = 0;               
+            enemyDirection = "E";    
+       }
+       else if (currentNextPointX > pacmanX && currentNextPointY > pacmanY) {
+            // right down
+            pacman.body.velocity.x = 75;
+            pacman.body.velocity.y = 75;               
+            enemyDirection = "SE";                
+       }
+       else if (currentNextPointX == pacmanX && currentNextPointY > pacmanY) {
+            // down
+            pacman.body.velocity.y = 150;  
+            pacman.body.velocity.x = 0;                 
+            enemyDirection = "S";
                             
        }
-       else if (currentNextPointX > pacmanX && currentNextPointY == pacmanY)
-       {
-          // right
-                            
-           console.log("GO RIGHT");
-             pacman.body.velocity.x = 150;  
-             pacman.body.velocity.y = 0;               
-           enemyDirection = "E";
-                        
-       }
-       else if (currentNextPointX > pacmanX && currentNextPointY > pacmanY)
-       {
-          // right down
-                            
-        console.log("GO RIGHT DOWN");
-        pacman.body.velocity.x = 75;
-        pacman.body.velocity.y = 75;
-                            
-        enemyDirection = "SE";
-                            
-       }
-       else if (currentNextPointX == pacmanX && currentNextPointY > pacmanY)
-       {
-          // down
-                            
-         console.log("GO DOWN");
-         pacman.body.velocity.y = 150;  
-          pacman.body.velocity.x = 0;                 
-         enemyDirection = "S";
-                            
-       }
-       else if (currentNextPointX < pacmanX && currentNextPointY > pacmanY)
-       {
-         // left down
-                            
-        console.log("GO LEFT DOWN" );
-         pacman.body.velocity.x = -75;
-        pacman.body.velocity.y = 75;
-        enemyDirection = "SW";
-                            
+       else if (currentNextPointX < pacmanX && currentNextPointY > pacmanY) {
+            // left down
+            pacman.body.velocity.x = -75;
+            pacman.body.velocity.y = 75;
+            enemyDirection = "SW";              
        }
        else
-       {
-                            
-        enemyDirection = "STOP";
-                    
+       {                
+            enemyDirection = "STOP";        
        }
+    }
     });
 
     pacman.rotation = game.physics.arcade.angleBetween(pacman, this.player);
@@ -260,9 +218,9 @@ JackDanger.Zhedar_PacJack.prototype.checkPath = function() {
 }
 
 JackDanger.Zhedar_PacJack.prototype.doCollision = function() {
-    this.game.physics.arcade.collide(this.player, this.bricks, this.collisionHandler, null, this);
+    this.game.physics.arcade.collide(this.player, this.bricks, null, null, this);
     this.game.physics.arcade.collide(this.player, this.mobs,  this.collisionHandler2, null, this);
-    this.game.physics.arcade.collide(this.mobs,   this.bricks, this.collisionHandler, null, this);
+    this.game.physics.arcade.collide(this.mobs,   this.bricks, this.pacManHitsABrick, null, this);
 }
 
 JackDanger.Zhedar_PacJack.prototype.updateEnergy = function() {
@@ -291,12 +249,13 @@ JackDanger.Zhedar_PacJack.prototype.movePacman = function () {
         sprite.rotation = game.physics.arcade.angleBetween(sprite, player);
         game.physics.arcade.moveToObject(sprite, player, 120);
     });
-
 }
 
-
-JackDanger.Zhedar_PacJack.prototype.collisionHandler = function(obj1, obj2) {
-    //TODO implement special collision effects
+JackDanger.Zhedar_PacJack.prototype.pacManHitsABrick = function(obj1, obj2) {
+    if(this.roundingFunct === Math.floor)
+        this.roundingFunct = Math.ceil;
+    else
+        this.roundingFunct = Math.floor;
 }
 
 JackDanger.Zhedar_PacJack.prototype.collisionHandler2 = function(obj1, obj2) {
