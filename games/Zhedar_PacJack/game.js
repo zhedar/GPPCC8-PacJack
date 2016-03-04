@@ -130,6 +130,7 @@ JackDanger.Zhedar_PacJack.prototype.createWorld = function() {
 
     this.easystar.setGrid(this.walkableWorld);
     this.easystar.setAcceptableTiles([1]);
+    this.easystar.enableDiagonals();
 
     //console.log(JSON.stringify(this.world));
 }
@@ -160,8 +161,8 @@ JackDanger.Zhedar_PacJack.prototype.checkPath = function() {
            // left up
                             
            console.log("GO LEFT UP");
-            pacman.body.velocity.x = 150;
-         pacman.body.velocity.y = -150;                 
+            pacman.body.velocity.x = -75;
+            pacman.body.velocity.y = -75;                 
            enemyDirection = "NW";
         }
         if (currentNextPointX == pacmanX && currentNextPointY < pacmanY)
@@ -180,8 +181,8 @@ JackDanger.Zhedar_PacJack.prototype.checkPath = function() {
            // right up
                             
            console.log("GO RIGHT UP");
-            pacman.body.velocity.x = 150;
-            pacman.body.velocity.y = -150;
+            pacman.body.velocity.x = 75;
+            pacman.body.velocity.y = -75;
           
                             
            enemyDirection = "NE";
@@ -189,12 +190,10 @@ JackDanger.Zhedar_PacJack.prototype.checkPath = function() {
        }
        else if (currentNextPointX < pacmanX && currentNextPointY == pacmanY)
        {
-          // left
-                            
-            console.log("GO LEFT" + pacmanY + " " + pacmanX + ", " + walk[pacmanY][pacmanX]);
+          // left                      
+            console.log("GO LEFT");
             pacman.body.velocity.x = -150;
             pacman.body.velocity.y = 0; 
-
                             
            enemyDirection = "W";
                             
@@ -214,8 +213,8 @@ JackDanger.Zhedar_PacJack.prototype.checkPath = function() {
           // right down
                             
         console.log("GO RIGHT DOWN");
-        pacman.body.velocity.x = 150;
-        pacman.body.velocity.y = 150;
+        pacman.body.velocity.x = 75;
+        pacman.body.velocity.y = 75;
                             
         enemyDirection = "SE";
                             
@@ -235,8 +234,8 @@ JackDanger.Zhedar_PacJack.prototype.checkPath = function() {
          // left down
                             
         console.log("GO LEFT DOWN" );
-         pacman.body.velocity.x = -150;
-        pacman.body.velocity.y = 150;
+         pacman.body.velocity.x = -75;
+        pacman.body.velocity.y = 75;
         enemyDirection = "SW";
                             
        }
