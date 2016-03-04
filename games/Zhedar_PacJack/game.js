@@ -119,8 +119,8 @@ JackDanger.Zhedar_PacJack.prototype.createWorld = function() {
 JackDanger.Zhedar_PacJack.prototype.checkPath = function() {
     var pacmanX = this.roundingFunct(this.pacman.body.x/20 ),
         pacmanY = this.roundingFunct(this.pacman.body.y/20),
-        playerX = this.roundingFunct(this.player.body.x/20),
-        playerY = this.roundingFunct(this.player.body.y/20);
+        playerX = Math.floor(this.player.body.x/20),
+        playerY = Math.floor(this.player.body.y/20);
 
     var pacman = this.pacman;
 
