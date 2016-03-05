@@ -17,10 +17,9 @@ JackDanger.Zhedar_PacJack.prototype.preload = function() {
 
     game.load.tilemap('tilemap', 'tilemap.json', null, Phaser.Tilemap.TILED_JSON);
     game.load.image('brick', 'brick.png');
-    game.load.image('pacman1', 'pacman1.png');
-    game.load.image('pacman2', 'pacman2.png');
-
     game.load.image('jack', 'jack.png');
+
+    game.load.atlas("pacman");
     
     this.id = currentGameData.id;   
 }
@@ -64,14 +63,16 @@ JackDanger.Zhedar_PacJack.prototype.addStuff = function() {
     this.energyText = game.add.bitmapText(100, 10, "testfont", "Energie: " + this.player.energy, 30);
     this.energyText.anchor.set(0.5);
 
-    this.pacman = game.add.sprite(700, 120, "pacman1");
+    this.pacman = game.add.sprite(700, 120, "pacman", "pacman1.png");
     this.pacman.anchor.setTo(.5,.5);
+    this.pacman.animations.add("mumble", ["pacman1.png", "pacman2.png"], 5, true, false);
+    this.pacman.animations.play("mumble");
+
     game.physics.enable(this.pacman, Phaser.Physics.ARCADE);
     this.pacman.body.velocity.y = -200;
 
     this.bricks.debug = true;
     this.map.setCollision(2);
-    //this.createWorld();
    
     console.log(this.bricks);
     var data = this.bricks.layer.data;
@@ -82,18 +83,10 @@ JackDanger.Zhedar_PacJack.prototype.addStuff = function() {
             this.walkableWorld[i][j] = data[i][j].index;
     }
 
-    console.log(this.walkableWorld);
-
     this.easystar.setGrid(this.walkableWorld);
     this.easystar.setAcceptableTiles([-1]);
     this.easystar.enableDiagonals();
     this.easystar.enableCornerCutting();
-
-
-
-    var timer = game.time.create(false);
-    timer.loop(500, this.animatePacman, this);
-    timer.start();
 
     this.roundingFunct = Math.floor;
     var checkPathTimer = game.time.create(false);
@@ -195,17 +188,6 @@ JackDanger.Zhedar_PacJack.prototype.updateEnergy = function() {
         this.player.energy ++;
 
     this.energyText.setText("Energie: " + this.player.energy);
-}
-
-JackDanger.Zhedar_PacJack.prototype.animatePacman = function() {
-    if(this.counter==2)
-        this.counter--;
-    else
-        this.counter++;
-
-    var player =  this.player;
-    var counter = this.counter;
-    this.pacman.frameName = "pacman" + counter;
 }
 
 JackDanger.Zhedar_PacJack.prototype.movePacman = function () {
