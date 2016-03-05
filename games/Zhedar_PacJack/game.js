@@ -71,27 +71,9 @@ JackDanger.Zhedar_PacJack.prototype.addStuff = function() {
     game.physics.enable(this.pacman, Phaser.Physics.ARCADE);
     this.pacman.body.velocity.y = -200;
 
-    this.bricks.debug = true;
     this.map.setCollision(2);
-   
-    console.log(this.bricks);
-    var data = this.bricks.layer.data;
-    this.walkableWorld = new Array(data.length)
-    for(i=0; i < data.length; i++) {
-        this.walkableWorld[i] = new Array(data[i].length);
-        for(j=0; j < data[i].length; j++)
-            this.walkableWorld[i][j] = data[i][j].index;
-    }
-
-    this.easystar.setGrid(this.walkableWorld);
-    this.easystar.setAcceptableTiles([-1]);
-    this.easystar.enableDiagonals();
-    this.easystar.enableCornerCutting();
-
-    this.roundingFunct = Math.floor;
-    var checkPathTimer = game.time.create(false);
-    checkPathTimer.loop(50, this.checkPath, this);
-    checkPathTimer.start();
+    
+    this.setupPacmanRoutes();
 }
 
 JackDanger.Zhedar_PacJack.prototype.checkPath = function() {
@@ -205,6 +187,26 @@ JackDanger.Zhedar_PacJack.prototype.pacManHitsABrick = function(obj1, obj2) {
 JackDanger.Zhedar_PacJack.prototype.collisionHandler2 = function(obj1, obj2) {
     //TODO implement special collision effects
     onLose();
+}
+
+JackDanger.Zhedar_PacJack.prototype.setupPacmanRoutes = function() {
+    var data = this.bricks.layer.data;
+    var walkableWorld = new Array(data.length)
+    for(i=0; i < data.length; i++) {
+        walkableWorld[i] = new Array(data[i].length);
+        for(j=0; j < data[i].length; j++)
+            walkableWorld[i][j] = data[i][j].index;
+    }
+
+    this.easystar.setGrid(walkableWorld);
+    this.easystar.setAcceptableTiles([-1]);
+    this.easystar.enableDiagonals();
+    this.easystar.enableCornerCutting();
+
+    this.roundingFunct = Math.floor;
+    var checkPathTimer = game.time.create(false);
+    checkPathTimer.loop(50, this.checkPath, this);
+    checkPathTimer.start();
 }
 
 JackDanger.Zhedar_PacJack.prototype.playerControls = function() {
