@@ -14,11 +14,15 @@ JackDanger.Zhedar_PacJack.prototype.init = function() {
 
 JackDanger.Zhedar_PacJack.prototype.preload = function() {
     this.load.path = 'games/' + currentGameData.id + '/assets/';//nicht anfassen
-    game.load.json('world', '/world.json');
-    
-    this.id = currentGameData.id;
 
-    this.load.atlas(this.id);
+    game.load.tilemap('tilemap', 'tilemap.json', null, Phaser.Tilemap.TILED_JSON);
+    game.load.image('brick', 'brick.png');
+    game.load.image('pacman1', 'pacman1.png');
+    game.load.image('pacman2', 'pacman2.png');
+
+    game.load.image('jack', 'jack.png');
+    
+    this.id = currentGameData.id;   
 }
 
 //wird nach dem laden gestartet
@@ -43,77 +47,58 @@ JackDanger.Zhedar_PacJack.prototype.addStuff = function() {
     game.physics.startSystem(Phaser.Physics.ARCADE);
     game.physics.arcade.gravity.y = 0;
 
-    this.createWorld();
+    this.map = game.add.tilemap('tilemap');
+    this.map.addTilesetImage("brick");
+    
+    this.bricks = this.map.createLayer('Walls');
+    game.physics.enable(this.bricks);
+
+    //this.bricks.resizeWorld();
+
+    this.player = game.add.sprite(30,30, 'jack');
+    this.player.anchor.setTo(.5,.5);
     this.player.maxEnergy = 2000;
     this.player.energy = this.player.maxEnergy/2;
+    game.physics.enable(this.player, Phaser.Physics.ARCADE);
+
+    this.energyText = game.add.bitmapText(100, 10, "testfont", "Energie: " + this.player.energy, 30);
+    this.energyText.anchor.set(0.5);
+
+    this.pacman = game.add.sprite(700, 120, "pacman1");
+    this.pacman.anchor.setTo(.5,.5);
+    game.physics.enable(this.pacman, Phaser.Physics.ARCADE);
+    this.pacman.body.velocity.y = -200;
+
+    this.bricks.debug = true;
+    this.map.setCollision(2);
+    //this.createWorld();
+   
+    console.log(this.bricks);
+    var data = this.bricks.layer.data;
+    this.walkableWorld = new Array(data.length)
+    for(i=0; i < data.length; i++) {
+        this.walkableWorld[i] = new Array(data[i].length);
+        for(j=0; j < data[i].length; j++)
+            this.walkableWorld[i][j] = data[i][j].index;
+    }
+
+    console.log(this.walkableWorld);
+
+    this.easystar.setGrid(this.walkableWorld);
+    this.easystar.setAcceptableTiles([-1]);
+    this.easystar.enableDiagonals();
+    this.easystar.enableCornerCutting();
+
+
 
     var timer = game.time.create(false);
     timer.loop(500, this.animatePacman, this);
     timer.start();
 
-    this.player.anchor.setTo(.5,.5);
-
-    this.energyText = game.add.bitmapText(100, 10, "testfont", "Energie: " + this.player.energy, 30);
-    this.energyText.anchor.set(0.5);
-
     this.roundingFunct = Math.floor;
     var checkPathTimer = game.time.create(false);
     checkPathTimer.loop(50, this.checkPath, this);
     checkPathTimer.start();
-}
-
-JackDanger.Zhedar_PacJack.prototype.createWorld = function() { 
-    var playerObj = {type:"player"}; 
-    var brickObj  = {type:"brick"};
-    var pacmanObj = {type:"pacman"};
-
-    this.bricks = game.add.group();
-    this.mobs = game.add.group();
-
-    this.world = game.cache.getJSON('world');
-
-    this.walkableWorld = new Array(this.world[0].length)
-    for(i=0; i < this.world[0].length; i++)
-        this.walkableWorld[i] = new Array(this.world.length);
-
-    for(i=0; i < this.world.length; i++)
-        for(j=0; j < this.world[i].length; j++) {
-            var entity = this.world[i][j];
-            if(typeof entity === 'undefined' || entity == null) {
-                this.walkableWorld[j][i] = 1;
-                continue;
-            }
-            
-            switch(entity.type) {
-                case "brick":
-                    var brickSprite = this.add.sprite(i*20,j*20, this.id, "brick.png");
-                    game.physics.enable(brickSprite, Phaser.Physics.ARCADE);
-                    brickSprite.body.immovable = true;
-                    brickSprite.body.bounce.set(0.2, 0.2, 0);
-                    brickSprite.body.collideWorldBounds = true;
-                    this.bricks.add(brickSprite);
-                    this.walkableWorld[j][i] = 0;
-                    break;
-                case "player":
-                    this.player = this.add.sprite(i*20,j*20, this.id, "jack.png");
-                    game.physics.enable(this.player, Phaser.Physics.ARCADE);
-                    this.walkableWorld[j][i] = 1;
-                    break;
-                case "pacman":
-                    var pacmanSprite = this.add.sprite(i*20, j*20, this.id, "pacman1.png");
-                        pacmanSprite.anchor.setTo(.5,.5);
-                    game.physics.enable(pacmanSprite, Phaser.Physics.ARCADE);
-                    this.pacman = pacmanSprite;
-                    this.mobs.add(pacmanSprite);
-                    this.walkableWorld[j][i] = 1;
-                    break;
-            }
-        }
-
-    this.easystar.setGrid(this.walkableWorld);
-    this.easystar.setAcceptableTiles([1]);
-    this.easystar.enableDiagonals();
-    this.easystar.enableCornerCutting()
 }
 
 JackDanger.Zhedar_PacJack.prototype.checkPath = function() {
@@ -126,7 +111,9 @@ JackDanger.Zhedar_PacJack.prototype.checkPath = function() {
 
     this.easystar.findPath(pacmanX, pacmanY, playerX, playerY, function( path ) {
         if (path === null) {
-            console.log("The path to the destination point was not found.");
+            //console.log("The path to the destination point was not found.");
+            console.log(pacmanX + " " + pacmanY + ", " + playerX + ", " + playerY);
+
             pacman.body.velocity.x = 0;
             pacman.body.velocity.y = 0;   
             return;
@@ -199,8 +186,8 @@ JackDanger.Zhedar_PacJack.prototype.checkPath = function() {
 
 JackDanger.Zhedar_PacJack.prototype.doCollision = function() {
     this.game.physics.arcade.collide(this.player, this.bricks, null, null, this);
-    this.game.physics.arcade.collide(this.player, this.mobs,  this.collisionHandler2, null, this);
-    this.game.physics.arcade.collide(this.mobs,   this.bricks, this.pacManHitsABrick, null, this);
+    this.game.physics.arcade.collide(this.player, this.pacman,  this.collisionHandler2, null, this);
+    this.game.physics.arcade.collide(this.pacman, this.bricks, this.pacManHitsABrick, null, this);
 }
 
 JackDanger.Zhedar_PacJack.prototype.updateEnergy = function() {
@@ -218,17 +205,12 @@ JackDanger.Zhedar_PacJack.prototype.animatePacman = function() {
 
     var player =  this.player;
     var counter = this.counter;
-    this.mobs.forEach(function(sprite) {
-        sprite.frameName = "pacman" + counter + ".png";
-    });
+    this.pacman.frameName = "pacman" + counter;
 }
 
 JackDanger.Zhedar_PacJack.prototype.movePacman = function () {
-    var player =  this.player;
-    this.mobs.forEach(function(sprite) {
-        sprite.rotation = game.physics.arcade.angleBetween(sprite, player);
-        game.physics.arcade.moveToObject(sprite, player, 120);
-    });
+    this.pacman.rotation = game.physics.arcade.angleBetween(this.pacman, this.player);
+    game.physics.arcade.moveToObject(this.pacman, this.player, 120);
 }
 
 JackDanger.Zhedar_PacJack.prototype.pacManHitsABrick = function(obj1, obj2) {
@@ -240,7 +222,7 @@ JackDanger.Zhedar_PacJack.prototype.pacManHitsABrick = function(obj1, obj2) {
 
 JackDanger.Zhedar_PacJack.prototype.collisionHandler2 = function(obj1, obj2) {
     //TODO implement special collision effects
-    //onLose();
+    onLose();
 }
 
 JackDanger.Zhedar_PacJack.prototype.playerControls = function() {
@@ -275,19 +257,4 @@ JackDanger.Zhedar_PacJack.prototype.playerControls = function() {
         this.player.body.velocity.y = 0;
         this.player.body.velocity.x = 0;
     }
-}
-
-JackDanger.Zhedar_PacJack.prototype.addWorldEdit = function() {
-    game.input.activePointer.leftButton.onDown.add(function() {
-        var x = Math.floor(game.input.worldX/20);
-        var y = Math.floor(game.input.worldY/20);
-        this.world[x][y] = {type:"brick"};
-        console.log(JSON.stringify(this.world));
-        
-        var brickSprite = this.game.add.sprite(x*20,y*20, this.id, "brick.png");
-            game.physics.enable(brickSprite, Phaser.Physics.ARCADE);
-            brickSprite.body.immovable = true;
-            brickSprite.body.collideWorldBounds = true;
-            this.bricks.add(brickSprite);
-    }, this, 0);
 }
