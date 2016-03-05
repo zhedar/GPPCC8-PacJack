@@ -37,7 +37,6 @@ JackDanger.Zhedar_PacJack.prototype.update = function() {
     this.playerControls();
     this.doCollision();
     this.updateEnergy();
-    //this.movePacman();
 }
 
 JackDanger.Zhedar_PacJack.prototype.addStuff = function() {
@@ -60,7 +59,7 @@ JackDanger.Zhedar_PacJack.prototype.addStuff = function() {
     this.player.energy = this.player.maxEnergy/2;
     game.physics.enable(this.player, Phaser.Physics.ARCADE);
 
-    this.energyText = game.add.bitmapText(100, 10, "testfont", "Energie: " + this.player.energy, 30);
+    this.energyText = game.add.bitmapText(100, 430, "testfont", "Energie: " + this.player.energy, 30);
     this.energyText.anchor.set(0.5);
 
     this.pacman = game.add.sprite(700, 120, "pacman", "pacman1.png");
@@ -83,17 +82,20 @@ JackDanger.Zhedar_PacJack.prototype.checkPath = function() {
         playerY = Math.floor(this.player.body.y/20);
 
     var pacman = this.pacman;
+    var player = this.player;
 
     this.easystar.findPath(pacmanX, pacmanY, playerX, playerY, function( path ) {
-        if (path === null) {
+        if (path === null || typeof path[1] == 'undefined' ) {
             //console.log("The path to the destination point was not found.");
-            console.log(pacmanX + " " + pacmanY + ", " + playerX + ", " + playerY);
 
             pacman.body.velocity.x = 0;
             pacman.body.velocity.y = 0;   
+            //workaround für rundungsfehler
+            game.physics.arcade.moveToObject(pacman, player, 150);
+
             return;
         }
-                            
+
         if (path) {
             currentNextPointX = path[1].x;
             currentNextPointY = path[1].y;
