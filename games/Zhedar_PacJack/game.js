@@ -15,9 +15,11 @@ JackDanger.Zhedar_PacJack.prototype.init = function() {
 JackDanger.Zhedar_PacJack.prototype.preload = function() {
     this.load.path = 'games/' + currentGameData.id + '/assets/';//nicht anfassen
 
-    game.load.tilemap('tilemap', 'tilemap.json', null, Phaser.Tilemap.TILED_JSON);
+    game.load.tilemap('tilemap', 'pacjack.json', null, Phaser.Tilemap.TILED_JSON);
     game.load.image('brick', 'brick.png');
     game.load.image('jack', 'jack.png');
+    game.load.image('key', 'key.png');
+    game.load.image('cherries', 'cherries.png');
 
     game.load.atlas("pacman");
     
@@ -47,11 +49,26 @@ JackDanger.Zhedar_PacJack.prototype.addStuff = function() {
 
     this.map = game.add.tilemap('tilemap');
     this.map.addTilesetImage("brick");
+    this.map.addTilesetImage('cherries');
+    this.map.addTilesetImage('key');
     
     this.bricks = this.map.createLayer('Walls');
     game.physics.enable(this.bricks);
 
+    this.cherries = game.add.group();
+    this.cherries.enableBody = true;
+
+    this.map.createFromObjects('Objects', 4, 'cherries', 0, true, false, this.cherries);
+    game.physics.enable(this.cherries);
+
+    this.keys = game.add.group();
+    this.keys.enableBody = true;
+
+    this.map.createFromObjects('Objects', 3, 'key', 0, true, false, this.keys);
+    game.physics.enable(this.keys);
+
     //this.bricks.resizeWorld();
+    //this.debug= true;
 
     this.player = game.add.sprite(30,30, 'jack');
     this.player.anchor.setTo(.5,.5);
@@ -64,6 +81,7 @@ JackDanger.Zhedar_PacJack.prototype.addStuff = function() {
 
     this.pacman = game.add.sprite(700, 120, "pacman", "pacman1.png");
     this.pacman.anchor.setTo(.5,.5);
+    this.pacman.stunTime = 0;
     this.pacman.animations.add("mumble", ["pacman1.png", "pacman2.png"], 5, true, false);
     this.pacman.animations.play("mumble");
 
@@ -71,6 +89,8 @@ JackDanger.Zhedar_PacJack.prototype.addStuff = function() {
     this.pacman.body.velocity.y = -200;
 
     this.map.setCollision(2);
+    this.map.setCollision(4);
+    this.map.setCollision(3);
     
     this.setupPacmanRoutes();
 }
@@ -83,6 +103,13 @@ JackDanger.Zhedar_PacJack.prototype.checkPath = function() {
 
     var pacman = this.pacman;
     var player = this.player;
+
+    if(pacman.stunTime > 0) {
+        pacman.stunTime--;
+        pacman.body.velocity.x = 0;
+        pacman.body.velocity.y = 0; 
+        return;
+    }
 
     this.easystar.findPath(pacmanX, pacmanY, playerX, playerY, function( path ) {
         if (path === null || typeof path[1] == 'undefined' ) {
@@ -165,6 +192,8 @@ JackDanger.Zhedar_PacJack.prototype.doCollision = function() {
     this.game.physics.arcade.collide(this.player, this.bricks, null, null, this);
     this.game.physics.arcade.collide(this.player, this.pacman,  this.collisionHandler2, null, this);
     this.game.physics.arcade.collide(this.pacman, this.bricks, this.pacManHitsABrick, null, this);
+    this.game.physics.arcade.collide(this.player, this.keys, this.playerCollectsKey, null, this);
+    game.physics.arcade.overlap(this.player, this.cherries, this.playerCollectsCherry, null, this);
 }
 
 JackDanger.Zhedar_PacJack.prototype.updateEnergy = function() {
@@ -189,6 +218,16 @@ JackDanger.Zhedar_PacJack.prototype.pacManHitsABrick = function(obj1, obj2) {
 JackDanger.Zhedar_PacJack.prototype.collisionHandler2 = function(obj1, obj2) {
     //TODO implement special collision effects
     onLose();
+}
+
+JackDanger.Zhedar_PacJack.prototype.playerCollectsCherry = function(player, object) {
+    this.pacman.stunTime+=50;
+    object.kill();
+}
+
+JackDanger.Zhedar_PacJack.prototype.playerCollectsKey = function(player, object) {
+    onVictory();
+    object.kill();
 }
 
 JackDanger.Zhedar_PacJack.prototype.setupPacmanRoutes = function() {
