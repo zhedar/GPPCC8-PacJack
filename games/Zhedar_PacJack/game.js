@@ -120,6 +120,7 @@ JackDanger.Zhedar_PacJack.prototype.checkPath = function() {
         pacman.angle += 25;
         return;
     }
+    var prop = this.setBodyProperties;
 
     this.easystar.findPath(pacmanX, pacmanY, playerX, playerY, function( path ) {
         if (path === null || typeof path[1] == 'undefined' ) {
@@ -138,64 +139,35 @@ JackDanger.Zhedar_PacJack.prototype.checkPath = function() {
             currentNextPointY = path[1].y;
 
             var speed = 150;
-            if (currentNextPointX < pacmanX && currentNextPointY < pacmanY) {
-               // left up
-                pacman.body.velocity.x = -1 * speed / 2;
-                pacman.body.velocity.y = -1 * speed / 2;
-                pacman.angle = 225;
-                pacman.scale.y = -1; 
-            }
-            if (currentNextPointX == pacmanX && currentNextPointY < pacmanY) {
-               // up
-               pacman.body.velocity.y = -1 * speed;
-               pacman.body.velocity.x = 0; 
-               pacman.angle = 270;          
-            }
-            else if (currentNextPointX > pacmanX && currentNextPointY < pacmanY) {
-                // right up
-                pacman.body.velocity.x = speed / 2;
-                pacman.body.velocity.y = -1 * speed / 2;
-                pacman.angle = 315;
-                pacman.scale.y = 1;               
-           }
-           else if (currentNextPointX < pacmanX && currentNextPointY == pacmanY) {
-                // left                      
-                pacman.body.velocity.x = -1 * speed;
-                pacman.body.velocity.y = 0;   
-                pacman.angle = 180;
-                pacman.scale.y = -1;                
-           }
-           else if (currentNextPointX > pacmanX && currentNextPointY == pacmanY) {
-                // right
-                pacman.body.velocity.x = speed;  
-                pacman.body.velocity.y = 0;   
-                pacman.angle = 0;
-                pacman.scale.y = 1;   
-           }
-           else if (currentNextPointX > pacmanX && currentNextPointY > pacmanY) {
-                // right down
-                pacman.body.velocity.x = speed / 2;
-                pacman.body.velocity.y = speed / 2; 
-                pacman.angle = 45;
-                pacman.scale.y = 1;              
-           }
-           else if (currentNextPointX == pacmanX && currentNextPointY > pacmanY) {
-                // down
-                pacman.body.velocity.y = speed;  
-                pacman.body.velocity.x = 0;
-                pacman.angle = 90;                          
-           }
-           else if (currentNextPointX < pacmanX && currentNextPointY > pacmanY) {
-                // left down
-                pacman.body.velocity.x = -1 * speed / 2;
-                pacman.body.velocity.y = speed / 2;
-                pacman.angle = 135;
-                pacman.scale.y = -1;           
-           }
+            if (currentNextPointX < pacmanX && currentNextPointY < pacmanY)       // left up
+                prop(pacman, (-1 * speed / 2), (-1 * speed / 2), 225, -1);
+            else if (currentNextPointX == pacmanX && currentNextPointY < pacmanY) // up
+                prop(pacman, 0, (-1 * speed), 270); 
+            else if (currentNextPointX > pacmanX && currentNextPointY < pacmanY)  // right up
+                prop(pacman, (speed / 2), (-1 * speed / 2), 315, 1);
+            else if (currentNextPointX < pacmanX && currentNextPointY == pacmanY) // left
+                prop(pacman, (-1 * speed), 0, 180, -1);           
+            else if (currentNextPointX > pacmanX && currentNextPointY == pacmanY) // right
+                prop(pacman, speed, 0, 0, 1);        
+            else if (currentNextPointX > pacmanX && currentNextPointY > pacmanY)  // right down
+                prop(pacman, speed/2, speed/2, 45, 1);
+            else if (currentNextPointX == pacmanX && currentNextPointY > pacmanY) // down
+                prop(pacman, 0, speed, 90);
+            else if (currentNextPointX < pacmanX && currentNextPointY > pacmanY)  // left down
+                prop(pacman, (-1 * speed / 2), (speed / 2), 135, -1);
         }
     });
     
     this.easystar.calculate();
+}
+
+JackDanger.Zhedar_PacJack.prototype.setBodyProperties = function(sprite, x, y, angle, scale) {
+    sprite.body.velocity.x = x;
+    sprite.body.velocity.y = y;
+    if (typeof angle !== 'undefined') 
+        sprite.angle = angle;
+    if (typeof scale !== 'undefined')
+        sprite.scale.y = scale;
 }
 
 JackDanger.Zhedar_PacJack.prototype.doCollision = function() {
