@@ -19,6 +19,7 @@ JackDanger.Zhedar_PacJack.prototype.preload = function() {
     game.load.image('brick', 'brick.png');
     game.load.image('jack', 'jack.png');
     game.load.image('key', 'key.png');
+    game.load.image('cherry', 'cherry.png');
     game.load.image('cherries', 'cherries.png');
     game.load.image('cherry_seed', 'cherry_seed.png');
 
@@ -81,7 +82,7 @@ JackDanger.Zhedar_PacJack.prototype.addStuff = function() {
     this.seedCountText = game.add.bitmapText(700, 430, "testfont", this.seedCount + "x", 30);
     this.seedCountText.anchor.set(0.5);
 
-    var cherry = game.add.sprite(740, 435, "cherries");
+    var cherry = game.add.sprite(740, 435, "cherry");
     cherry.anchor.set(0.5);
     cherry.scale.x = 2;
     cherry.scale.y = 2;
