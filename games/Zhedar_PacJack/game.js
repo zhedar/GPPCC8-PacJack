@@ -20,6 +20,7 @@ JackDanger.Zhedar_PacJack.prototype.preload = function() {
     game.load.image('jack', 'jack.png');
     game.load.image('key', 'key.png');
     game.load.image('cherries', 'cherries.png');
+    game.load.image('cherry_seed', 'cherry_seed.png');
 
     game.load.atlas("pacman");
     
@@ -55,20 +56,18 @@ JackDanger.Zhedar_PacJack.prototype.addStuff = function() {
     this.bricks = this.map.createLayer('Walls');
     game.physics.enable(this.bricks);
 
-    this.cherries = game.add.group();
-    this.cherries.enableBody = true;
+    this.cherries = this.createFromObjectLayer(4, 'cherries');
+    this.keys     = this.createFromObjectLayer(3, 'key');
 
-    this.map.createFromObjects('Objects', 4, 'cherries', 0, true, false, this.cherries);
-    game.physics.enable(this.cherries);
+    this.seeds = game.add.group();
+    this.seeds.enableBody = true;
+    this.seeds.physicsBodyType = Phaser.Physics.ARCADE;
 
-    this.keys = game.add.group();
-    this.keys.enableBody = true;
-
-    this.map.createFromObjects('Objects', 3, 'key', 0, true, false, this.keys);
-    game.physics.enable(this.keys);
-
-    //this.bricks.resizeWorld();
-    //this.debug= true;
+    this.seeds.createMultiple(10, 'cherry_seed');
+    this.seeds.setAll('checkWorldBounds', true);
+    this.seeds.setAll('outOfBoundsKill', true);
+    
+    this.seedCount = 0;
 
     this.player = game.add.sprite(30,30, 'jack');
     this.player.anchor.setTo(.5,.5);
@@ -78,6 +77,15 @@ JackDanger.Zhedar_PacJack.prototype.addStuff = function() {
 
     this.energyText = game.add.bitmapText(100, 430, "testfont", "Energie: " + this.player.energy, 30);
     this.energyText.anchor.set(0.5);
+
+    this.seedCountText = game.add.bitmapText(700, 430, "testfont", this.seedCount + "x", 30);
+    this.seedCountText.anchor.set(0.5);
+
+    var cherry = game.add.sprite(740, 435, "cherries");
+    cherry.anchor.set(0.5);
+    cherry.scale.x = 2;
+    cherry.scale.y = 2;
+
 
     this.pacman = game.add.sprite(700, 120, "pacman", "pacman1.png");
     this.pacman.anchor.setTo(.5,.5);
@@ -108,6 +116,7 @@ JackDanger.Zhedar_PacJack.prototype.checkPath = function() {
         pacman.stunTime--;
         pacman.body.velocity.x = 0;
         pacman.body.velocity.y = 0; 
+        pacman.angle += 25;
         return;
     }
 
@@ -189,11 +198,55 @@ JackDanger.Zhedar_PacJack.prototype.checkPath = function() {
 }
 
 JackDanger.Zhedar_PacJack.prototype.doCollision = function() {
-    this.game.physics.arcade.collide(this.player, this.bricks, null, null, this);
-    this.game.physics.arcade.collide(this.player, this.pacman,  this.collisionHandler2, null, this);
-    this.game.physics.arcade.collide(this.pacman, this.bricks, this.pacManHitsABrick, null, this);
-    this.game.physics.arcade.collide(this.player, this.keys, this.playerCollectsKey, null, this);
+    game.physics.arcade.collide(this.player, this.bricks, null, null, this);
+    game.physics.arcade.collide(this.player, this.pacman,  this.collisionHandler2, null, this);
+    game.physics.arcade.collide(this.pacman, this.bricks, this.pacManHitsABrick, null, this);
+
+    game.physics.arcade.collide(this.player, this.keys, this.playerCollectsKey, null, this);
     game.physics.arcade.overlap(this.player, this.cherries, this.playerCollectsCherry, null, this);
+
+    game.physics.arcade.collide(this.seeds, this.pacman, this.pacmanGetsHit, null, this);
+    game.physics.arcade.collide(this.seeds, this.bricks, this.seedHitsBrick, null, this);
+}
+
+JackDanger.Zhedar_PacJack.prototype.pacManHitsABrick = function(obj1, obj2) {
+    if(this.roundingFunct === Math.floor)
+        this.roundingFunct = Math.ceil;
+    else
+        this.roundingFunct = Math.floor;
+}
+
+JackDanger.Zhedar_PacJack.prototype.pacmanGetsHit = function(pacman, seed) {
+    pacman.stunTime=50;
+    seed.kill();
+}
+
+JackDanger.Zhedar_PacJack.prototype.seedHitsBrick = function(seed, brick) {
+    seed.kill();
+}
+
+JackDanger.Zhedar_PacJack.prototype.createFromObjectLayer = function(gid, key) {
+    var group = game.add.group();
+    group.enableBody = true;
+    this.map.createFromObjects('Objects', gid, key, 0, true, false, group);
+    game.physics.enable(group);
+    return group;
+}
+
+JackDanger.Zhedar_PacJack.prototype.collisionHandler2 = function(obj1, obj2) {
+    //TODO implement special collision effects
+    onLose();
+}
+
+JackDanger.Zhedar_PacJack.prototype.playerCollectsCherry = function(player, object) {
+    this.seedCount += 2;
+    this.seedCountText.setText(this.seedCount + "x");
+    object.kill();
+}
+
+JackDanger.Zhedar_PacJack.prototype.playerCollectsKey = function(player, object) {
+    onVictory();
+    object.kill();
 }
 
 JackDanger.Zhedar_PacJack.prototype.updateEnergy = function() {
@@ -208,27 +261,6 @@ JackDanger.Zhedar_PacJack.prototype.movePacman = function () {
     game.physics.arcade.moveToObject(this.pacman, this.player, 120);
 }
 
-JackDanger.Zhedar_PacJack.prototype.pacManHitsABrick = function(obj1, obj2) {
-    if(this.roundingFunct === Math.floor)
-        this.roundingFunct = Math.ceil;
-    else
-        this.roundingFunct = Math.floor;
-}
-
-JackDanger.Zhedar_PacJack.prototype.collisionHandler2 = function(obj1, obj2) {
-    //TODO implement special collision effects
-    onLose();
-}
-
-JackDanger.Zhedar_PacJack.prototype.playerCollectsCherry = function(player, object) {
-    this.pacman.stunTime+=50;
-    object.kill();
-}
-
-JackDanger.Zhedar_PacJack.prototype.playerCollectsKey = function(player, object) {
-    onVictory();
-    object.kill();
-}
 
 JackDanger.Zhedar_PacJack.prototype.setupPacmanRoutes = function() {
     var data = this.bricks.layer.data;
@@ -250,8 +282,40 @@ JackDanger.Zhedar_PacJack.prototype.setupPacmanRoutes = function() {
     checkPathTimer.start();
 }
 
+JackDanger.Zhedar_PacJack.prototype.fireSeed = function(bulletSpeed) {
+    if(this.seedCount == 0)
+        return;
+    
+    this.seedCount--;
+    this.seedCountText.setText(this.seedCount + "x");
+
+    var seed = this.seeds.getFirstDead();
+
+    seed.reset(this.player.x, this.player.y);
+    seed.body.velocity.x = 0;
+    seed.body.velocity.y = 0;
+
+    switch(this.player.body.facing) {
+        case 1:
+            seed.body.velocity.x = -1 * bulletSpeed;
+            break;
+        case 2:
+            seed.body.velocity.x = bulletSpeed;
+            break;
+        case 3:
+            seed.body.velocity.y = -1*bulletSpeed;
+            break;
+        case 4:
+            seed.body.velocity.y = bulletSpeed;
+            break;
+    }
+}
+
 JackDanger.Zhedar_PacJack.prototype.playerControls = function() {
     var speed = 200;
+
+    if(Pad.justDown(Pad.SHOOT))
+        this.fireSeed(speed*3);
 
     if(Pad.isDown(Pad.JUMP) && this.player.energy > 10) {
         this.player.energy-=10;
