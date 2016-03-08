@@ -17,13 +17,13 @@ JackDanger.Zhedar_PacJack.prototype.preload = function() {
 
     game.load.tilemap('tilemap', 'pacjack.json', null, Phaser.Tilemap.TILED_JSON);
     game.load.image('brick', 'brick.png');
-    game.load.image('jack', 'jack.png');
     game.load.image('key', 'key.png');
     game.load.image('cherry', 'cherry.png');
     game.load.image('cherries', 'cherries.png');
     game.load.image('cherry_seed', 'cherry_seed.png');
 
     game.load.atlas("pacman");
+    game.load.atlas("jack");
     
     this.id = currentGameData.id;   
 }
@@ -70,7 +70,9 @@ JackDanger.Zhedar_PacJack.prototype.addStuff = function() {
     
     this.seedCount = 0;
 
-    this.player = game.add.sprite(30,30, 'jack');
+    this.player = game.add.sprite(30,30, "jack", "jack0.png");
+    this.player.animations.add("walk", ["jack1.png", "jack2.png"], 4, true, false);
+    this.player.animations.play("walk");
     this.player.anchor.setTo(.5,.5);
     this.player.maxEnergy = 2000;
     this.player.energy = this.player.maxEnergy/2;
@@ -287,6 +289,9 @@ JackDanger.Zhedar_PacJack.prototype.fireSeed = function(bulletSpeed) {
 JackDanger.Zhedar_PacJack.prototype.playerControls = function() {
     var speed = 200;
 
+    var walks = true;
+    console.log(this.player.animations.currentAnim.name);
+
     if(Pad.justDown(Pad.SHOOT))
         this.fireSeed(speed*3);
 
@@ -318,5 +323,13 @@ JackDanger.Zhedar_PacJack.prototype.playerControls = function() {
     else {
         this.player.body.velocity.y = 0;
         this.player.body.velocity.x = 0;
+        walks = false;
+        this.player.animations.stop(null, true);
+        this.player.frameName = "jack0.png";
     }
+
+    if(walks)
+        this.player.animations.play("walk");
+  
+
 }
