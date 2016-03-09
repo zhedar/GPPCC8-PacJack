@@ -16,7 +16,9 @@ JackDanger.Zhedar_PacJack.prototype.preload = function() {
     this.load.path = 'games/' + currentGameData.id + '/assets/';//nicht anfassen
 
     game.load.tilemap('tilemap', 'pacjack.json', null, Phaser.Tilemap.TILED_JSON);
-    game.load.image('brick', 'brick.png');
+    game.load.image('brick', 'brick2.png');
+    game.load.image('brick2_mossy', 'brick2_mossy.png');
+    game.load.image('ground3', 'ground3.png');
     game.load.image('key', 'key.png');
     game.load.image('cherry', 'cherry.png');
     game.load.image('cherries', 'cherries.png');
@@ -53,6 +55,8 @@ JackDanger.Zhedar_PacJack.prototype.addStuff = function() {
     this.map.addTilesetImage("brick");
     this.map.addTilesetImage('cherries');
     this.map.addTilesetImage('key');
+    this.map.addTilesetImage('brick2_mossy');
+    this.map.addTilesetImage('ground3');
     
     this.bricks = this.map.createLayer('Walls');
     game.physics.enable(this.bricks);
@@ -102,6 +106,8 @@ JackDanger.Zhedar_PacJack.prototype.addStuff = function() {
     this.map.setCollision(2);
     this.map.setCollision(4);
     this.map.setCollision(3);
+    this.map.setCollision(5);
+
     
     this.setupPacmanRoutes();
 }
@@ -177,7 +183,7 @@ JackDanger.Zhedar_PacJack.prototype.setBodyProperties = function(sprite, x, y, a
 
 JackDanger.Zhedar_PacJack.prototype.doCollision = function() {
     game.physics.arcade.collide(this.player, this.bricks, null, null, this);
-    game.physics.arcade.collide(this.player, this.pacman,  this.collisionHandler2, null, this);
+    game.physics.arcade.collide(this.player, this.pacman, this.collisionHandler2, null, this);
     game.physics.arcade.collide(this.pacman, this.bricks, this.pacManHitsABrick, null, this);
 
     game.physics.arcade.collide(this.player, this.keys, this.playerCollectsKey, null, this);
@@ -250,11 +256,10 @@ JackDanger.Zhedar_PacJack.prototype.setupPacmanRoutes = function() {
     }
 
     this.easystar.setGrid(walkableWorld);
-    this.easystar.setAcceptableTiles([-1]);
+    this.easystar.setAcceptableTiles([-1, 7]);
     this.easystar.enableDiagonals();
-    this.easystar.enableCornerCutting();
+    //this.easystar.enableCornerCutting();
 
-    this.roundingFunct = Math.floor;
     var checkPathTimer = game.time.create(false);
     checkPathTimer.loop(50, this.checkPath, this);
     checkPathTimer.start();
