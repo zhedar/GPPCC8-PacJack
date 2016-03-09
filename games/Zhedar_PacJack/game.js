@@ -260,6 +260,7 @@ JackDanger.Zhedar_PacJack.prototype.setupPacmanRoutes = function() {
     this.easystar.enableDiagonals();
     //this.easystar.enableCornerCutting();
 
+    this.roundingFunct = Math.floor;
     var checkPathTimer = game.time.create(false);
     checkPathTimer.loop(50, this.checkPath, this);
     checkPathTimer.start();
