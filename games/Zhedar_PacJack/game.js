@@ -164,6 +164,9 @@ JackDanger.Zhedar_PacJack.prototype.checkPath = function() {
 }
 
 JackDanger.Zhedar_PacJack.prototype.setBodyProperties = function(sprite, x, y, angle, scale) {
+    if(sprite == null || sprite.body == null)
+        return;
+
     sprite.body.velocity.x = x;
     sprite.body.velocity.y = y;
     if (typeof angle !== 'undefined') 
@@ -288,9 +291,7 @@ JackDanger.Zhedar_PacJack.prototype.fireSeed = function(bulletSpeed) {
 
 JackDanger.Zhedar_PacJack.prototype.playerControls = function() {
     var speed = 200;
-
     var walks = true;
-    console.log(this.player.animations.currentAnim.name);
 
     if(Pad.justDown(Pad.SHOOT))
         this.fireSeed(speed*3);
