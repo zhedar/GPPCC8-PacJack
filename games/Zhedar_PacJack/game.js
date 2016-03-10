@@ -43,6 +43,7 @@ JackDanger.Zhedar_PacJack.prototype.update = function() {
     this.playerControls();
     this.doCollision();
     this.updateEnergy();
+    this.changePacmanMovement();
 }
 
 JackDanger.Zhedar_PacJack.prototype.addStuff = function() {
@@ -101,7 +102,11 @@ JackDanger.Zhedar_PacJack.prototype.addStuff = function() {
     this.pacman.animations.play("mumble");
 
     game.physics.enable(this.pacman, Phaser.Physics.ARCADE);
-    this.pacman.body.velocity.y = -200;
+    this.pacman.next = {};
+    this.pacman.next.x = 700;
+    this.pacman.next.y = 120;
+    this.pacman.body.width = 15;
+    this.pacman.body.height = 15;
 
     this.map.setCollision(2);
     this.map.setCollision(4);
@@ -113,22 +118,13 @@ JackDanger.Zhedar_PacJack.prototype.addStuff = function() {
 }
 
 JackDanger.Zhedar_PacJack.prototype.checkPath = function() {
-    var pacmanX = this.roundingFunct(this.pacman.body.x/20 ),
-        pacmanY = this.roundingFunct(this.pacman.body.y/20),
-        playerX = Math.floor(this.player.body.x/20),
-        playerY = Math.floor(this.player.body.y/20);
-
     var pacman = this.pacman;
     var player = this.player;
 
-    if(pacman.stunTime > 0) {
-        pacman.stunTime--;
-        pacman.body.velocity.x = 0;
-        pacman.body.velocity.y = 0; 
-        pacman.angle += 25;
-        return;
-    }
-    var prop = this.setBodyProperties;
+    var pacmanX = this.roundingFunct(this.pacman.body.x/20),
+        pacmanY = this.roundingFunct(this.pacman.body.y/20),
+        playerX = Math.floor(this.player.body.x/20),
+        playerY = Math.floor(this.player.body.y/20);
 
     this.easystar.findPath(pacmanX, pacmanY, playerX, playerY, function( path ) {
         if (path === null || typeof path[1] == 'undefined' ) {
@@ -143,26 +139,8 @@ JackDanger.Zhedar_PacJack.prototype.checkPath = function() {
         }
 
         if (path) {
-            currentNextPointX = path[1].x;
-            currentNextPointY = path[1].y;
-
-            var speed = 150;
-            if (currentNextPointX < pacmanX && currentNextPointY < pacmanY)       // left up
-                prop(pacman, (-1 * speed / 2), (-1 * speed / 2), 225, -1);
-            else if (currentNextPointX == pacmanX && currentNextPointY < pacmanY) // up
-                prop(pacman, 0, (-1 * speed), 270); 
-            else if (currentNextPointX > pacmanX && currentNextPointY < pacmanY)  // right up
-                prop(pacman, (speed / 2), (-1 * speed / 2), 315, 1);
-            else if (currentNextPointX < pacmanX && currentNextPointY == pacmanY) // left
-                prop(pacman, (-1 * speed), 0, 180, -1);           
-            else if (currentNextPointX > pacmanX && currentNextPointY == pacmanY) // right
-                prop(pacman, speed, 0, 0, 1);        
-            else if (currentNextPointX > pacmanX && currentNextPointY > pacmanY)  // right down
-                prop(pacman, speed/2, speed/2, 45, 1);
-            else if (currentNextPointX == pacmanX && currentNextPointY > pacmanY) // down
-                prop(pacman, 0, speed, 90);
-            else if (currentNextPointX < pacmanX && currentNextPointY > pacmanY)  // left down
-                prop(pacman, (-1 * speed / 2), (speed / 2), 135, -1);
+            pacman.next.x = path[1].x*20;
+            pacman.next.y = path[1].y*20;            
         }
     });
     
@@ -179,6 +157,52 @@ JackDanger.Zhedar_PacJack.prototype.setBodyProperties = function(sprite, x, y, a
         sprite.angle = angle;
     if (typeof scale !== 'undefined')
         sprite.scale.y = scale;
+}
+
+JackDanger.Zhedar_PacJack.prototype.changePacmanMovement = function() {
+    var pacman = this.pacman;
+    var pacmanX = this.pacman.body.x;
+        pacmanY = this.pacman.body.y;
+
+    if(pacman.stunTime > 0) {
+        pacman.stunTime--;
+        pacman.body.velocity.x = 0;
+        pacman.body.velocity.y = 0; 
+        pacman.angle += 10;
+        return;
+    }
+
+    //console.log(pacman.next.x +" " + pacman.next.y + ", " + pacmanX + " " + pacmanY);
+    //console.log("x" + Math.abs(pacmanX-pacman.next.x));
+    //console.log("y" + Math.abs(pacmanY-pacman.next.y));
+
+    //if(pacmanX == pacman.next.x && pacmanY == pacman.next.y || (pacman.body.velocity.x == 0 && pacman.body.velocity.y == 0)) {
+    //if((Math.abs(pacmanX-pacman.next.x) < 2 && Math.abs(pacmanY-pacman.next.y) < 2) || (pacman.body.velocity.x == 0 && pacman.body.velocity.y == 0)) {
+    var prop = this.setBodyProperties;
+    var speed = 150;
+    //game.physics.arcade.moveToXY(pacman, pacman.next.x, pacman.next.y, speed);
+    //var tile = this.map.getTileWorldXY(pacman.next.x, pacman.next.y);
+    //game.physics.arcade.moveToObject(pacman, tile.x, tile.y , 150);
+    //console.log(pacman.next.x + " " + pacman.next.y + "; " + pacmanX + " " + pacmanY);
+
+    if (pacman.next.x < pacmanX && pacman.next.y < pacmanY)       // left up
+        prop(pacman, (-1 * speed / 2), (-1 * speed / 2), 225, -1);
+    else if (pacman.next.x == pacmanX && pacman.next.y < pacmanY) // up
+        prop(pacman, 0, (-1 * speed), 270); 
+    else if (pacman.next.x > pacmanX && pacman.next.y < pacmanY)  // right up
+        prop(pacman, (speed / 2), (-1 * speed / 2), 315, 1);
+    else if (pacman.next.x < pacmanX && pacman.next.y == pacmanY) // left
+        prop(pacman, (-1 * speed), 0, 180, -1);           
+    else if (pacman.next.x > pacmanX && pacman.next.y == pacmanY) // right
+        prop(pacman, speed, 0, 0, 1);        
+    else if (pacman.next.x > pacmanX && pacman.next.y > pacmanY)  // right down
+        prop(pacman, speed/2, speed/2, 45, 1);
+    else if (pacman.next.x == pacmanX && pacman.next.y > pacmanY) // down
+        prop(pacman, 0, speed, 90);
+    else if (pacman.next.x < pacmanX && pacman.next.y > pacmanY)  // left down
+        prop(pacman, (-1 * speed / 2), (speed / 2), 135, -1);
+    this.checkPath();
+    //}
 }
 
 JackDanger.Zhedar_PacJack.prototype.doCollision = function() {
@@ -257,7 +281,7 @@ JackDanger.Zhedar_PacJack.prototype.setupPacmanRoutes = function() {
 
     this.easystar.setGrid(walkableWorld);
     this.easystar.setAcceptableTiles([-1, 7]);
-    this.easystar.enableDiagonals();
+    //this.easystar.enableDiagonals();
     //this.easystar.enableCornerCutting();
 
     this.roundingFunct = Math.floor;
