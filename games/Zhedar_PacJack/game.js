@@ -17,6 +17,9 @@ JackDanger.Zhedar_PacJack.prototype.preload = function() {
 
     game.load.tilemap('tilemap', 'pacjack.json', null, Phaser.Tilemap.TILED_JSON);
     game.load.image('brick', 'brick2.png');
+    game.load.image('brick_broken0', 'brick_broken0.png');
+    game.load.image('brick_broken1', 'brick_broken1.png');
+    game.load.image('brick_broken2', 'brick_broken2.png');
     game.load.image('brick2_mossy', 'brick2_mossy.png');
     game.load.image('ground3', 'ground3.png');
     game.load.image('key', 'key.png');
@@ -57,6 +60,9 @@ JackDanger.Zhedar_PacJack.prototype.addStuff = function() {
     this.map.addTilesetImage('cherries');
     this.map.addTilesetImage('key');
     this.map.addTilesetImage('brick2_mossy');
+    this.map.addTilesetImage('brick_broken0');
+    this.map.addTilesetImage('brick_broken1');
+    this.map.addTilesetImage('brick_broken2');
     this.map.addTilesetImage('ground3');
     
     this.bricks = this.map.createLayer('Walls');
@@ -94,7 +100,6 @@ JackDanger.Zhedar_PacJack.prototype.addStuff = function() {
     cherry.scale.x = 2;
     cherry.scale.y = 2;
 
-
     this.pacman = game.add.sprite(700, 120, "pacman", "pacman1.png");
     this.pacman.anchor.setTo(.5,.5);
     this.pacman.stunTime = 0;
@@ -112,6 +117,9 @@ JackDanger.Zhedar_PacJack.prototype.addStuff = function() {
     this.map.setCollision(4);
     this.map.setCollision(3);
     this.map.setCollision(5);
+    this.map.setCollision(7);
+    this.map.setCollision(8);
+    this.map.setCollision(9);
 
     
     this.setupPacmanRoutes();
@@ -128,8 +136,8 @@ JackDanger.Zhedar_PacJack.prototype.checkPath = function() {
 
     this.easystar.findPath(pacmanX, pacmanY, playerX, playerY, function( path ) {
         if (path === null || typeof path[1] == 'undefined' ) {
-            //console.log("The path to the destination point was not found.");
-
+            pacman.next.x = null;
+            pacman.next.y = null;
             pacman.body.velocity.x = 0;
             pacman.body.velocity.y = 0;   
             //workaround für rundungsfehler
@@ -230,6 +238,27 @@ JackDanger.Zhedar_PacJack.prototype.pacmanGetsHit = function(pacman, seed) {
 }
 
 JackDanger.Zhedar_PacJack.prototype.seedHitsBrick = function(seed, brick) {
+    var hitType = this.walkables[brick.y][brick.x];
+    var convertType;
+    switch(hitType) {
+        case 2:
+            convertType = 7;
+            break;
+        case 7:
+            convertType = 8;
+            break;
+        case 8:
+            convertType = 9;
+            break;
+        case 9:
+            convertType = 6;
+            break;
+    }
+
+    this.walkables[brick.y][brick.x] = convertType;
+    this.map.removeTile(brick.x, brick.y);
+    this.map.putTile(convertType, brick.x, brick.y);
+
     seed.kill();
 }
 
@@ -269,7 +298,6 @@ JackDanger.Zhedar_PacJack.prototype.movePacman = function () {
     game.physics.arcade.moveToObject(this.pacman, this.player, 120);
 }
 
-
 JackDanger.Zhedar_PacJack.prototype.setupPacmanRoutes = function() {
     var data = this.bricks.layer.data;
     var walkableWorld = new Array(data.length)
@@ -279,8 +307,10 @@ JackDanger.Zhedar_PacJack.prototype.setupPacmanRoutes = function() {
             walkableWorld[i][j] = data[i][j].index;
     }
 
+    this.walkables = walkableWorld;
+
     this.easystar.setGrid(walkableWorld);
-    this.easystar.setAcceptableTiles([-1, 7]);
+    this.easystar.setAcceptableTiles([-1, 6]);
     //this.easystar.enableDiagonals();
     //this.easystar.enableCornerCutting();
 
