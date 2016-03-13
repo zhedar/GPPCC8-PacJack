@@ -49,7 +49,6 @@ JackDanger.Zhedar_PacJack.prototype.update = function() {
     this.playerControls();
     this.doCollision();
     this.updateEnergy();
-    this.changePacmanMovement();
 }
 
 JackDanger.Zhedar_PacJack.prototype.addStuff = function() {
@@ -119,15 +118,15 @@ JackDanger.Zhedar_PacJack.prototype.addStuff = function() {
     this.pacman.body.width = 15;
     this.pacman.body.height = 15;
 
-    this.map.setCollision(2);
+    this.map.setCollision([2,3,4,5,7,8,9]);
+    /*this.map.setCollision(2);
     this.map.setCollision(4);
     this.map.setCollision(3);
     this.map.setCollision(5);
     this.map.setCollision(7);
     this.map.setCollision(8);
-    this.map.setCollision(9);
+    this.map.setCollision(9);*/
 
-    
     this.setupPacmanRoutes();
 }
 
@@ -137,8 +136,8 @@ JackDanger.Zhedar_PacJack.prototype.checkPath = function() {
 
     var pacmanX = this.roundingFunct(this.pacman.body.x/20),
         pacmanY = this.roundingFunct(this.pacman.body.y/20),
-        playerX = Math.floor(this.player.body.x/20),
-        playerY = Math.floor(this.player.body.y/20);
+        playerX = Math.floor(this.player.x/20),
+        playerY = Math.floor(this.player.y/20);
 
     this.easystar.findPath(pacmanX, pacmanY, playerX, playerY, function( path ) {
         if (path === null || typeof path[1] == 'undefined' ) {
@@ -147,7 +146,7 @@ JackDanger.Zhedar_PacJack.prototype.checkPath = function() {
             pacman.body.velocity.x = 0;
             pacman.body.velocity.y = 0;   
             //workaround für rundungsfehler
-            game.physics.arcade.moveToObject(pacman, player, 150);
+            //game.physics.arcade.moveToObject(pacman, player, 150);
 
             return;
         }
@@ -159,14 +158,15 @@ JackDanger.Zhedar_PacJack.prototype.checkPath = function() {
     });
     
     this.easystar.calculate();
+    this.changePacmanMovement();
 }
 
-JackDanger.Zhedar_PacJack.prototype.setBodyProperties = function(sprite, x, y, angle, scale) {
+JackDanger.Zhedar_PacJack.prototype.setBodyProperties = function(sprite, factorX, factorY, speed, angle, scale) {
     if(sprite == null || sprite.body == null)
         return;
 
-    sprite.body.velocity.x = x;
-    sprite.body.velocity.y = y;
+    sprite.body.velocity.x = factorX * speed;
+    sprite.body.velocity.y = factorY * speed;
     if (typeof angle !== 'undefined') 
         sprite.angle = angle;
     if (typeof scale !== 'undefined')
@@ -200,29 +200,29 @@ JackDanger.Zhedar_PacJack.prototype.changePacmanMovement = function() {
     //console.log(pacman.next.x + " " + pacman.next.y + "; " + pacmanX + " " + pacmanY);
 
     if (pacman.next.x < pacmanX && pacman.next.y < pacmanY)       // left up
-        prop(pacman, (-1 * speed / 2), (-1 * speed / 2), 225, -1);
+        prop(pacman, (-1/2), (-1/2), speed, 225, -1);
     else if (pacman.next.x == pacmanX && pacman.next.y < pacmanY) // up
-        prop(pacman, 0, (-1 * speed), 270); 
+        prop(pacman, 0, -1, speed, 270); 
     else if (pacman.next.x > pacmanX && pacman.next.y < pacmanY)  // right up
-        prop(pacman, (speed / 2), (-1 * speed / 2), 315, 1);
+        prop(pacman, 1/2, -1/2, speed, 315, 1);
     else if (pacman.next.x < pacmanX && pacman.next.y == pacmanY) // left
-        prop(pacman, (-1 * speed), 0, 180, -1);           
+        prop(pacman, -1, 0, speed, 180, -1);           
     else if (pacman.next.x > pacmanX && pacman.next.y == pacmanY) // right
-        prop(pacman, speed, 0, 0, 1);        
+        prop(pacman, 1, 0, speed, 0, 1);        
     else if (pacman.next.x > pacmanX && pacman.next.y > pacmanY)  // right down
-        prop(pacman, speed/2, speed/2, 45, 1);
+        prop(pacman, 1/2, 1/2, speed, 45, 1);
     else if (pacman.next.x == pacmanX && pacman.next.y > pacmanY) // down
-        prop(pacman, 0, speed, 90);
+        prop(pacman, 0, 1, speed, 90);
     else if (pacman.next.x < pacmanX && pacman.next.y > pacmanY)  // left down
-        prop(pacman, (-1 * speed / 2), (speed / 2), 135, -1);
-    this.checkPath();
+        prop(pacman, (-1/2), (1/2), speed, 135, -1);
+    //this.checkPath();
     //}
 }
 
 JackDanger.Zhedar_PacJack.prototype.doCollision = function() {
     game.physics.arcade.collide(this.player, this.bricks, null, null, this);
     game.physics.arcade.collide(this.player, this.pacman, this.collisionHandler2, null, this);
-    game.physics.arcade.collide(this.pacman, this.bricks, this.pacManHitsABrick, null, this);
+    //game.physics.arcade.collide(this.pacman, this.bricks, this.pacManHitsABrick, null, this);
 
     game.physics.arcade.collide(this.player, this.keys, this.playerCollectsKey, null, this);
     game.physics.arcade.overlap(this.player, this.cherries, this.playerCollectsCherry, null, this);
@@ -232,10 +232,10 @@ JackDanger.Zhedar_PacJack.prototype.doCollision = function() {
 }
 
 JackDanger.Zhedar_PacJack.prototype.pacManHitsABrick = function(obj1, obj2) {
-    if(this.roundingFunct === Math.floor)
+    /*if(this.roundingFunct === Math.floor)
         this.roundingFunct = Math.ceil;
     else
-        this.roundingFunct = Math.floor;
+        this.roundingFunct = Math.floor;*/
 }
 
 JackDanger.Zhedar_PacJack.prototype.pacmanGetsHit = function(pacman, seed) {
@@ -317,12 +317,12 @@ JackDanger.Zhedar_PacJack.prototype.setupPacmanRoutes = function() {
 
     this.easystar.setGrid(walkableWorld);
     this.easystar.setAcceptableTiles([-1, 6]);
-    //this.easystar.enableDiagonals();
-    //this.easystar.enableCornerCutting();
+    this.easystar.enableDiagonals();
+    this.easystar.disableCornerCutting();
 
-    this.roundingFunct = Math.floor;
+    this.roundingFunct = Math.round;
     var checkPathTimer = game.time.create(false);
-    checkPathTimer.loop(50, this.checkPath, this);
+    checkPathTimer.loop(40, this.checkPath, this);
     checkPathTimer.start();
 }
 
@@ -360,7 +360,7 @@ JackDanger.Zhedar_PacJack.prototype.playerControls = function() {
     var walks = true;
 
     if(Pad.justDown(Pad.SHOOT))
-        this.fireSeed(speed*3);
+        this.fireSeed(speed*2.5);
 
     if(Pad.isDown(Pad.JUMP) && this.player.energy > 10) {
         this.player.energy-=10;
