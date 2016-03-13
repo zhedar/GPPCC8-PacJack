@@ -333,17 +333,17 @@ JackDanger.Zhedar_PacJack.prototype.fireSeed = function(bulletSpeed) {
     seed.body.velocity.x = 0;
     seed.body.velocity.y = 0;
 
-    switch(this.player.body.facing) {
-        case 1:
+    switch(this.player.angle) {
+        case 90:
             seed.body.velocity.x = -1 * bulletSpeed;
             break;
-        case 2:
+        case -90:
             seed.body.velocity.x = bulletSpeed;
             break;
-        case 3:
+        case -180:
             seed.body.velocity.y = -1*bulletSpeed;
             break;
-        case 4:
+        case 0:
             seed.body.velocity.y = bulletSpeed;
             break;
     }
