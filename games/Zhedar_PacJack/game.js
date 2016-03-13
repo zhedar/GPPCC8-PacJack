@@ -93,6 +93,7 @@ JackDanger.Zhedar_PacJack.prototype.addStuff = function() {
     this.player.anchor.setTo(.5,.5);
     this.player.maxEnergy = 2000;
     this.player.energy = this.player.maxEnergy/2;
+    this.player.hasKey = false;
     game.physics.enable(this.player, Phaser.Physics.ARCADE);
     this.player.body.collideWorldBounds = true;
 
@@ -283,8 +284,16 @@ JackDanger.Zhedar_PacJack.prototype.playerCollectsCherry = function(player, obje
 }
 
 JackDanger.Zhedar_PacJack.prototype.playerCollectsKey = function(player, object) {
-    onVictory();
     object.kill();
+    this.player.hasKey = true;
+    var key = game.add.sprite(770, 435, "key");
+    key.anchor.set(0.5);
+    key.scale.x = 1.5;
+    key.scale.y = 1.5;
+
+
+    //onVictory();
+    
 }
 
 JackDanger.Zhedar_PacJack.prototype.updateEnergy = function() {
