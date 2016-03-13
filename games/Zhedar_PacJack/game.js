@@ -57,6 +57,8 @@ JackDanger.Zhedar_PacJack.prototype.addStuff = function() {
     game.physics.startSystem(Phaser.Physics.ARCADE);
     game.physics.arcade.gravity.y = 0;
 
+    game.physics.arcade.setBounds(0, 0, 800, 400);
+
     this.map = game.add.tilemap('tilemap');
     this.map.addTilesetImage("brick");
     this.map.addTilesetImage('cherries');
@@ -92,7 +94,7 @@ JackDanger.Zhedar_PacJack.prototype.addStuff = function() {
     this.player.maxEnergy = 2000;
     this.player.energy = this.player.maxEnergy/2;
     game.physics.enable(this.player, Phaser.Physics.ARCADE);
-    this.player.collideWorldBounds = true;
+    this.player.body.collideWorldBounds = true;
 
     this.energyText = game.add.bitmapText(100, 430, "testfont", "Energie: " + this.player.energy, 30);
     this.energyText.anchor.set(0.5);
@@ -118,14 +120,7 @@ JackDanger.Zhedar_PacJack.prototype.addStuff = function() {
     this.pacman.body.width = 15;
     this.pacman.body.height = 15;
 
-    this.map.setCollision([2,3,4,5,7,8,9]);
-    /*this.map.setCollision(2);
-    this.map.setCollision(4);
-    this.map.setCollision(3);
-    this.map.setCollision(5);
-    this.map.setCollision(7);
-    this.map.setCollision(8);
-    this.map.setCollision(9);*/
+    this.map.setCollision([2, 3, 4, 5, 7 ,8 , 9, 10, 11]);
 
     this.setupPacmanRoutes();
 }
