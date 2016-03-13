@@ -22,6 +22,9 @@ JackDanger.Zhedar_PacJack.prototype.preload = function() {
     game.load.image('brick_broken2', 'brick_broken2.png');
     game.load.image('brick2_mossy', 'brick2_mossy.png');
     game.load.image('ground3', 'ground3.png');
+    game.load.image('stairs_up', 'stairs_up.png');
+    game.load.image('stairs_down', 'stairs_down.png');
+
     game.load.image('key', 'key.png');
     game.load.image('cherry', 'cherry.png');
     game.load.image('cherries', 'cherries.png');
@@ -64,6 +67,8 @@ JackDanger.Zhedar_PacJack.prototype.addStuff = function() {
     this.map.addTilesetImage('brick_broken1');
     this.map.addTilesetImage('brick_broken2');
     this.map.addTilesetImage('ground3');
+    this.map.addTilesetImage('stairs_up');
+    this.map.addTilesetImage('stairs_down');
     
     this.bricks = this.map.createLayer('Walls');
     game.physics.enable(this.bricks);
@@ -88,6 +93,7 @@ JackDanger.Zhedar_PacJack.prototype.addStuff = function() {
     this.player.maxEnergy = 2000;
     this.player.energy = this.player.maxEnergy/2;
     game.physics.enable(this.player, Phaser.Physics.ARCADE);
+    this.player.collideWorldBounds = true;
 
     this.energyText = game.add.bitmapText(100, 430, "testfont", "Energie: " + this.player.energy, 30);
     this.energyText.anchor.set(0.5);
