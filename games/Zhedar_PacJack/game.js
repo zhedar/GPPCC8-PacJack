@@ -71,8 +71,12 @@ JackDanger.Zhedar_PacJack.prototype.addStuff = function() {
     this.map.addTilesetImage('stairs_up');
     this.map.addTilesetImage('stairs_down');
     
+    this.map.createLayer('Ground').resizeWorld();
     this.bricks = this.map.createLayer('Walls');
     game.physics.enable(this.bricks);
+    //this.bricks.enableBody = true;
+
+    this.bricks.resizeWorld();
 
     this.cherries = this.createFromObjectLayer(4, 'cherries');
     this.keys     = this.createFromObjectLayer(3, 'key');
@@ -121,7 +125,7 @@ JackDanger.Zhedar_PacJack.prototype.addStuff = function() {
     this.pacman.body.width = 15;
     this.pacman.body.height = 15;
 
-    this.map.setCollision([2, 3, 4, 5, 7 ,8 , 9, 10, 11]);
+    this.map.setCollision([2, 3, 4, 5, 7 ,8 , 9, 10, 11], true, this.bricks);
 
     this.setupPacmanRoutes();
 }
@@ -174,6 +178,7 @@ JackDanger.Zhedar_PacJack.prototype.changePacmanMovement = function() {
     var pacmanX = this.pacman.body.x;
         pacmanY = this.pacman.body.y;
 
+
     if(pacman.stunTime > 0) {
         pacman.stunTime--;
         pacman.body.velocity.x = 0;
@@ -211,8 +216,6 @@ JackDanger.Zhedar_PacJack.prototype.changePacmanMovement = function() {
         prop(pacman, 0, 1, speed, 90);
     else if (pacman.next.x < pacmanX && pacman.next.y > pacmanY)  // left down
         prop(pacman, (-1/2), (1/2), speed, 135, -1);
-    //this.checkPath();
-    //}
 }
 
 JackDanger.Zhedar_PacJack.prototype.doCollision = function() {
@@ -240,10 +243,13 @@ JackDanger.Zhedar_PacJack.prototype.pacmanGetsHit = function(pacman, seed) {
 }
 
 JackDanger.Zhedar_PacJack.prototype.seedHitsBrick = function(seed, brick) {
+    seed.kill();
+
     var hitType = this.walkables[brick.y][brick.x];
     var convertType;
     switch(hitType) {
         case 2:
+        case 5:
             convertType = 7;
             break;
         case 7:
@@ -255,13 +261,15 @@ JackDanger.Zhedar_PacJack.prototype.seedHitsBrick = function(seed, brick) {
         case 9:
             convertType = 6;
             break;
+        default:
+            return;
     }
 
     this.walkables[brick.y][brick.x] = convertType;
-    this.map.removeTile(brick.x, brick.y);
-    this.map.putTile(convertType, brick.x, brick.y);
+    this.easystar.setGrid(this.walkables);
+    this.map.removeTile(brick.x, brick.y, this.bricks);
+    this.map.putTile(convertType, brick.x, brick.y, this.bricks);
 
-    seed.kill();
 }
 
 JackDanger.Zhedar_PacJack.prototype.createFromObjectLayer = function(gid, key) {
