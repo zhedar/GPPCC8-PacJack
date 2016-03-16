@@ -32,6 +32,7 @@ JackDanger.Zhedar_PacJack.prototype.preload = function() {
 
     game.load.atlas("pacman");
     game.load.atlas("jack");
+    game.load.audio('powerup_sfx', 'Powerup.mp3');
     
     this.id = currentGameData.id;   
 }
@@ -50,6 +51,7 @@ JackDanger.Zhedar_PacJack.prototype.update = function() {
 
 JackDanger.Zhedar_PacJack.prototype.mycreate = function() {
     this.counter = 1;
+    game.add.audio('sfx').allowMultiple = true;
 
     game.physics.startSystem(Phaser.Physics.ARCADE);
     game.physics.arcade.gravity.y = 0;
@@ -286,6 +288,7 @@ JackDanger.Zhedar_PacJack.prototype.playerCollectsCherry = function(player, obje
     this.seedCount += 2;
     this.seedCountText.setText(this.seedCount + "x");
     object.kill();
+    game.add.audio('powerup_sfx').play();
 }
 
 JackDanger.Zhedar_PacJack.prototype.playerCollectsKey = function(player, object) {
