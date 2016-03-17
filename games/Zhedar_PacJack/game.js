@@ -36,6 +36,7 @@ JackDanger.Zhedar_PacJack.prototype.preload = function() {
     game.load.atlas('jack');
 
     game.load.audio('powerup_sfx', 'Powerup.mp3');
+    game.load.audio('shoot_sfx', 'shoot.mp3');
     
     this.id = currentGameData.id;   
 }
@@ -379,6 +380,8 @@ JackDanger.Zhedar_PacJack.prototype.fireSeed = function(bulletSpeed) {
             seed.body.velocity.y = bulletSpeed;
             break;
     }
+
+    game.add.audio('shoot_sfx').play();
 }
 
 JackDanger.Zhedar_PacJack.prototype.playerControls = function() {
