@@ -24,6 +24,9 @@ JackDanger.Zhedar_PacJack.prototype.preload = function() {
     game.load.image('ground3', 'ground3.png');
     game.load.image('stairs_up', 'stairs_up.png');
     game.load.image('stairs_down', 'stairs_down.png');
+    this.collectedObjects = new Array(3);
+    for(i = 0; i < 3; i++)
+        this.collectedObjects[i] = [];
 
     game.load.image('key', 'key.png');
     game.load.image('cherry', 'cherry.png');
@@ -136,9 +139,19 @@ JackDanger.Zhedar_PacJack.prototype.createStage = function() {
     this.stairsDown = this.createFromObjectLayer(10, 'stairs_down');
     this.stairsUp = this.createFromObjectLayer(11, 'stairs_up');
 
+    this.removeCollected(this.cherries);
+    this.removeCollected(this.keys);
+
     this.setupPathfindingData();
 
     this.map.setCollision([2, 3, 4, 5, 7 ,8 , 9, 10, 11], true, this.bricks);
+}
+
+JackDanger.Zhedar_PacJack.prototype.removeCollected = function(group) {
+    for(i = 0; i < this.collectedObjects[this.stage].length; i++)
+        for(j = 0; j < group.children.length; j++)
+            if(this.collectedObjects[this.stage][i].position.equals(group.children[j].position))
+                group.children[j].destroy();
 }
 
 JackDanger.Zhedar_PacJack.prototype.clearStage = function() {
@@ -237,6 +250,7 @@ JackDanger.Zhedar_PacJack.prototype.doCollision = function() {
     game.physics.arcade.overlap(this.player, this.keys, this.playerCollectsKey, null, this);
     game.physics.arcade.overlap(this.player, this.cherries, this.playerCollectsCherry, null, this);
     game.physics.arcade.overlap(this.player, this.stairsDown, this.playerUsesStairsDown, null, this);
+    game.physics.arcade.overlap(this.player, this.stairsUp, this.playerUsesStairsUp, null, this);
 
     game.physics.arcade.collide(this.seeds, this.pacman, this.pacmanGetsHit, null, this);
     game.physics.arcade.collide(this.seeds, this.bricks, this.seedHitsBrick, null, this);
@@ -293,10 +307,12 @@ JackDanger.Zhedar_PacJack.prototype.playerCollectsCherry = function(player, obje
     this.seedCount += 2;
     this.seedCountText.setText(this.seedCount + "x");
     game.add.audio('powerup_sfx').play();
+    this.collectedObjects[this.stage].push(object);
     object.destroy();
 }
 
 JackDanger.Zhedar_PacJack.prototype.playerCollectsKey = function(player, object) {
+    this.collectedObjects[this.stage].push(object);
     object.destroy();
     this.player.hasKey = true;
     var key = game.add.sprite(770, 435, "key");
@@ -314,6 +330,12 @@ JackDanger.Zhedar_PacJack.prototype.playerUsesStairsDown = function(player, obje
     //tween.onComplete.add(function() {black.alpha = 0;}, this);
     this.clearStage();
     this.stage--;
+    this.createStage();
+}
+
+JackDanger.Zhedar_PacJack.prototype.playerUsesStairsUp = function(player, object) {
+    this.clearStage();
+    this.stage++;
     this.createStage();
 }
 
