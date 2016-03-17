@@ -84,7 +84,7 @@ JackDanger.Zhedar_PacJack.prototype.mycreate = function() {
     this.map.addTilesetImage('stairs_up');
     this.map.addTilesetImage('stairs_down');
     
-    this.map.createLayer('Ground').resizeWorld();
+    this.map.createLayer('Ground');
 
     this.createStage();    
 
@@ -150,6 +150,9 @@ JackDanger.Zhedar_PacJack.prototype.createStage = function() {
     this.cherries = this.createFromObjectLayer(4, 'cherries');
     this.stairsDown = this.createFromObjectLayer(10, 'stairs_down');
     this.stairsUp = this.createFromObjectLayer(11, 'stairs_up');
+
+    if(this.player) //if this is a stage change, the player should be over ground tiles
+        this.player.bringToTop();
 
     this.removeCollected(this.cherries);
     this.removeCollected(this.keys);
