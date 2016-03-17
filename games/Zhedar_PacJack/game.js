@@ -39,6 +39,7 @@ JackDanger.Zhedar_PacJack.prototype.preload = function() {
     game.load.atlas('jack');
 
     game.load.audio('powerup_sfx', 'Powerup.mp3');
+    game.load.audio('pickup_sfx', 'pickup.mp3');
     game.load.audio('shoot_sfx', 'shoot.mp3');
     
     this.id = currentGameData.id;   
@@ -319,6 +320,7 @@ JackDanger.Zhedar_PacJack.prototype.playerCollectsKey = function(player, object)
     key.anchor.set(0.5);
     key.scale.x = 1.5;
     key.scale.y = 1.5;
+     game.add.audio('pickup_sfx').play();
 }
 
 JackDanger.Zhedar_PacJack.prototype.playerUsesStairsDown = function(player, object) {
