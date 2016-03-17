@@ -41,6 +41,9 @@ JackDanger.Zhedar_PacJack.prototype.preload = function() {
     game.load.audio('powerup_sfx', 'Powerup.mp3');
     game.load.audio('pickup_sfx', 'pickup.mp3');
     game.load.audio('shoot_sfx', 'shoot.mp3');
+    game.load.audio('hit1_sfx', 'hit1.mp3');
+    game.load.audio('hit2_sfx', 'hit2.mp3');
+    game.load.audio('hit3_sfx', 'hit3.mp3');
     
     this.id = currentGameData.id;   
 }
@@ -280,15 +283,19 @@ JackDanger.Zhedar_PacJack.prototype.seedHitsBrick = function(seed, brick) {
         case 2:
         case 5:
             convertType = 7;
+            game.add.audio('hit1_sfx').play();
             break;
         case 7:
             convertType = 8;
+             game.add.audio('hit2_sfx').play();
             break;
         case 8:
             convertType = 9;
+            game.add.audio('hit1_sfx').play();
             break;
         case 9:
             convertType = 6;
+             game.add.audio('hit3_sfx').play();
             break;
         default:
             return;
