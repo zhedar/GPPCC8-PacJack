@@ -115,7 +115,11 @@ JackDanger.Zhedar_PacJack.prototype.mycreate = function() {
     cherry.scale.x = 2;
     cherry.scale.y = 2;
 
-    this.pacman = game.add.sprite(700, 120, "pacman", "pacman1.png");
+    this.spawnPacman(700, 120);
+}
+
+JackDanger.Zhedar_PacJack.prototype.spawnPacman = function(x, y) {
+    this.pacman = game.add.sprite(x, y, "pacman", "pacman1.png");
     this.pacman.anchor.setTo(.5,.5);
     this.pacman.stunTime = 0;
     this.pacman.animations.add("mumble", ["pacman1.png", "pacman2.png"], 5, true, false);
@@ -127,8 +131,11 @@ JackDanger.Zhedar_PacJack.prototype.mycreate = function() {
     this.pacman.next.y = 120;
     this.pacman.body.width = 15;
     this.pacman.body.height = 15;
-
     this.startCheckPathTimer();
+}
+
+JackDanger.Zhedar_PacJack.prototype.despawnPacman = function() {
+    this.pacman.kill();
 }
 
 JackDanger.Zhedar_PacJack.prototype.createStage = function() {
@@ -160,6 +167,8 @@ JackDanger.Zhedar_PacJack.prototype.clearStage = function() {
     this.keys.destroy();
     this.cherries.destroy();
     this.stairsDown.destroy();
+
+    this.despawnPacman();
 }
 
 JackDanger.Zhedar_PacJack.prototype.checkPath = function() {
