@@ -85,18 +85,9 @@ JackDanger.Zhedar_PacJack.prototype.mycreate = function() {
     this.map.addTilesetImage('stairs_down');
     
     this.map.createLayer('Ground');
+    this.createStage(); 
 
-    this.createStage();    
-
-    this.seeds = game.add.group();
-    this.seeds.enableBody = true;
-    this.seeds.physicsBodyType = Phaser.Physics.ARCADE;
-
-    this.seeds.createMultiple(10, 'cherry_seed');
-    this.seeds.setAll('checkWorldBounds', true);
-    this.seeds.setAll('outOfBoundsKill', true);
-    
-    this.seedCount = 0;
+    this.createSeeds();   
 
     this.player = game.add.sprite(30,30, "jack", "jack0.png");
     this.player.animations.add("walk", ["jack1.png", "jack2.png"], 4, true, false);
@@ -136,6 +127,18 @@ JackDanger.Zhedar_PacJack.prototype.spawnPacman = function(x, y) {
     this.pacman.body.width = 15;
     this.pacman.body.height = 15;
     this.startCheckPathTimer();
+}
+
+JackDanger.Zhedar_PacJack.prototype.createSeeds = function() {
+     this.seedCount = 0;
+
+    this.seeds = game.add.group();
+    this.seeds.enableBody = true;
+    this.seeds.physicsBodyType = Phaser.Physics.ARCADE;
+
+    this.seeds.createMultiple(10, 'cherry_seed');
+    this.seeds.setAll('checkWorldBounds', true);
+    this.seeds.setAll('outOfBoundsKill', true);
 }
 
 JackDanger.Zhedar_PacJack.prototype.despawnPacman = function() {
