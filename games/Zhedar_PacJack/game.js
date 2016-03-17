@@ -44,6 +44,7 @@ JackDanger.Zhedar_PacJack.prototype.preload = function() {
     game.load.audio('hit1_sfx', 'hit1.mp3');
     game.load.audio('hit2_sfx', 'hit2.mp3');
     game.load.audio('hit3_sfx', 'hit3.mp3');
+    game.load.audio('pacmanHit_sfx', 'pacmanHit.mp3');
     
     this.id = currentGameData.id;   
 }
@@ -271,6 +272,7 @@ JackDanger.Zhedar_PacJack.prototype.doCollision = function() {
 
 JackDanger.Zhedar_PacJack.prototype.pacmanGetsHit = function(pacman, seed) {
     pacman.stunTime=50;
+    game.add.audio('pacmanHit_sfx').play();
     seed.kill();
 }
 
