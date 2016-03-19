@@ -177,8 +177,6 @@ JackDanger.Zhedar_PacJack.prototype.clearStage = function() {
     this.keys.destroy();
     this.cherries.destroy();
     this.stairsDown.destroy();
-
-    this.despawnPacman();
 }
 
 JackDanger.Zhedar_PacJack.prototype.checkPath = function() {
@@ -348,20 +346,19 @@ JackDanger.Zhedar_PacJack.prototype.playerCollectsKey = function(player, object)
 }
 
 JackDanger.Zhedar_PacJack.prototype.playerUsesStairsDown = function(player, object) {
-    var black = this.blackScreen = game.add.sprite(0,0,"black");
-    black.scale.x = 200;
-    black.scale.y = 200;
-    black.alpha = 0;
-    //var tween = game.add.tween(black).to({alpha: 1}, 1000, Phaser.Easing.Linear.None, true);
-    //tween.onComplete.add(function() {black.alpha = 0;}, this);
-    this.clearStage();
     this.stage--;
-    this.createStage();
+    this.playerUsesStairs();
 }
 
 JackDanger.Zhedar_PacJack.prototype.playerUsesStairsUp = function(player, object) {
-    this.clearStage();
     this.stage++;
+    this.playerUsesStairs();
+}
+
+JackDanger.Zhedar_PacJack.prototype.playerUsesStairs = function() {
+    this.clearStage();
+    this.despawnPacman();
+
     this.createStage();
 }
 
