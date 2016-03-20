@@ -143,6 +143,8 @@ JackDanger.Zhedar_PacJack.prototype.createSeeds = function() {
 
 JackDanger.Zhedar_PacJack.prototype.despawnPacman = function() {
     this.pacman.kill();
+    //clear any open spawn events, so we won't have too much trouble
+    game.time.events.remove(this.spawnEvent);
 }
 
 JackDanger.Zhedar_PacJack.prototype.createStage = function() {
@@ -342,7 +344,7 @@ JackDanger.Zhedar_PacJack.prototype.playerCollectsKey = function(player, object)
     key.anchor.set(0.5);
     key.scale.x = 1.5;
     key.scale.y = 1.5;
-     game.add.audio('pickup_sfx').play();
+    game.add.audio('pickup_sfx').play();
 }
 
 JackDanger.Zhedar_PacJack.prototype.playerUsesStairsDown = function(player, object) {
@@ -360,6 +362,10 @@ JackDanger.Zhedar_PacJack.prototype.playerUsesStairs = function() {
     this.despawnPacman();
 
     this.createStage();
+    var currentX = this.player.x;
+        currentY = this.player.y;
+
+    this.spawnEvent = game.time.events.add(Phaser.Timer.SECOND * 2, function(){this.spawnPacman(currentX, currentY)}, this);
 }
 
 JackDanger.Zhedar_PacJack.prototype.updateEnergy = function() {
