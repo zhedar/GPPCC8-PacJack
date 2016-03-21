@@ -226,9 +226,6 @@ JackDanger.Zhedar_PacJack.prototype.changePacmanMovement = function() {
     var pacmanX = this.pacman.body.x;
         pacmanY = this.pacman.body.y;
 
-    /*if(this.pacman.path)
-        console.log(this.pacman.path.length);*/
-
     if(pacman.stunTime > 0) {
         pacman.stunTime--;
         pacman.body.velocity.x = 0;
@@ -237,12 +234,6 @@ JackDanger.Zhedar_PacJack.prototype.changePacmanMovement = function() {
         return;
     }
 
-    //console.log(pacman.next.x +" " + pacman.next.y + ", " + pacmanX + " " + pacmanY);
-    //console.log("x" + Math.abs(pacmanX-pacman.next.x));
-    //console.log("y" + Math.abs(pacmanY-pacman.next.y));
-
-    //if(pacmanX == pacman.next.x && pacmanY == pacman.next.y || (pacman.body.velocity.x == 0 && pacman.body.velocity.y == 0)) {
-    //if((Math.abs(pacmanX-pacman.next.x) < 2 && Math.abs(pacmanY-pacman.next.y) < 2) || (pacman.body.velocity.x == 0 && pacman.body.velocity.y == 0)) {
     var speed = 150;
     if (pacman.next.x < pacmanX && pacman.next.y < pacmanY)       // left up
         this.setBodyProperties(pacman, (-1/2), (-1/2), speed, 225, -1);
@@ -364,8 +355,8 @@ JackDanger.Zhedar_PacJack.prototype.playerUsesStairs = function() {
     this.createStage();
     var currentX = this.player.x;
         currentY = this.player.y;
-
-    this.spawnEvent = game.time.events.add(Phaser.Timer.SECOND * 2, function(){this.spawnPacman(currentX, currentY)}, this);
+    
+    this.spawnEvent = game.time.events.add(Phaser.Timer.SECOND * this.pacman.path.length/5 , function(){this.spawnPacman(currentX, currentY)}, this);
 }
 
 JackDanger.Zhedar_PacJack.prototype.updateEnergy = function() {
