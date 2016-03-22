@@ -122,8 +122,8 @@ JackDanger.Zhedar_PacJack.prototype.spawnPacman = function(x, y) {
 
     game.physics.enable(this.pacman, Phaser.Physics.ARCADE);
     this.pacman.next = {};
-    this.pacman.next.x = 700;
-    this.pacman.next.y = 120;
+    this.pacman.next.x = this.pacman.body.x;
+    this.pacman.next.y = this.pacman.body.y;
     this.pacman.body.width = 15;
     this.pacman.body.height = 15;
     this.startCheckPathTimer();
@@ -339,16 +339,15 @@ JackDanger.Zhedar_PacJack.prototype.playerCollectsKey = function(player, object)
 }
 
 JackDanger.Zhedar_PacJack.prototype.playerUsesStairsDown = function(player, object) {
-    this.stage--;
-    this.playerUsesStairs();
+    this.playerUsesStairs(-1);
 }
 
 JackDanger.Zhedar_PacJack.prototype.playerUsesStairsUp = function(player, object) {
-    this.stage++;
-    this.playerUsesStairs();
+    this.playerUsesStairs(1);
 }
 
-JackDanger.Zhedar_PacJack.prototype.playerUsesStairs = function() {
+JackDanger.Zhedar_PacJack.prototype.playerUsesStairs = function(direction) {
+    this.stage = this.stage + direction;
     this.clearStage();
     this.despawnPacman();
 
