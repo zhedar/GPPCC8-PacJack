@@ -99,10 +99,10 @@ JackDanger.Zhedar_PacJack.prototype.mycreate = function() {
     game.physics.enable(this.player, Phaser.Physics.ARCADE);
     this.player.body.collideWorldBounds = true;
 
-    this.energyText = game.add.bitmapText(100, 430, "testfont", "Energie: " + this.player.energy, 30);
+    this.energyText = game.add.bitmapText(100, 430, "white", "Energie: " + this.player.energy, 30);
     this.energyText.anchor.set(0.5);
 
-    this.seedCountText = game.add.bitmapText(700, 430, "testfont", this.seedCount + "x", 30);
+    this.seedCountText = game.add.bitmapText(700, 430, "white", this.seedCount + "x", 30);
     this.seedCountText.anchor.set(0.5);
 
     var cherry = game.add.sprite(740, 435, "cherry");
