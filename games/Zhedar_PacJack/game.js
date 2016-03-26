@@ -383,7 +383,6 @@ JackDanger.Zhedar_PacJack.prototype.playerUsesStairs = function(direction) {
     this.createStage();
     var currentX = this.player.body.x;
         currentY = this.player.body.y;
-    logInfo(currentX + ", " + currentY);
 
     //calculate how far away pacman is from the player or if he isn't spawned, set a static time
     var respawnTime = this.pacman.exists ? (this.pacman.path.length/5) : 2;
