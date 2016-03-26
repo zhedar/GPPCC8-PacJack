@@ -22,11 +22,10 @@ JackDanger.Zhedar_PacJack.prototype.preload = function() {
     game.load.image('brick_broken2', 'brick_broken2.png');
     game.load.image('brick2_mossy', 'brick2_mossy.png');
     game.load.image('ground3', 'ground3.png');
+    game.load.image('locked_door', 'locked_door.png');
+
     game.load.image('stairs_up', 'stairs_up.png');
     game.load.image('stairs_down', 'stairs_down.png');
-    this.collectedObjects = new Array(3);
-    for(i = 0; i < 3; i++)
-        this.collectedObjects[i] = [];
 
     game.load.image('key', 'key.png');
     game.load.image('cherry', 'cherry.png');
@@ -49,12 +48,10 @@ JackDanger.Zhedar_PacJack.prototype.preload = function() {
     this.id = currentGameData.id;   
 }
 
-//wird nach dem laden gestartet
 JackDanger.Zhedar_PacJack.prototype.create = function() {
-    Pad.init();//nicht anfassen
+    Pad.init();
 }
 
-//wird jeden Frame aufgerufen
 JackDanger.Zhedar_PacJack.prototype.update = function() {
     this.playerControls();
     this.doCollision();
@@ -83,8 +80,14 @@ JackDanger.Zhedar_PacJack.prototype.mycreate = function() {
     this.map.addTilesetImage('ground3');
     this.map.addTilesetImage('stairs_up');
     this.map.addTilesetImage('stairs_down');
+    this.map.addTilesetImage('locked_door');
     
     this.map.createLayer('Ground');
+
+    this.collectedObjects = new Array(3);
+    for(i = 0; i < 3; i++)
+        this.collectedObjects[i] = [];
+
     this.createStage(); 
 
     this.createSeeds();   
@@ -110,6 +113,10 @@ JackDanger.Zhedar_PacJack.prototype.mycreate = function() {
     cherry.scale.x = 2;
     cherry.scale.y = 2;
 
+
+    this.checkPathTimer = game.time.create(false);
+    this.checkPathTimer.loop(40, this.checkPath, this);
+
     this.spawnPacman(700, 120);
 }
 
@@ -126,11 +133,28 @@ JackDanger.Zhedar_PacJack.prototype.spawnPacman = function(x, y) {
     this.pacman.next.y = this.pacman.body.y;
     this.pacman.body.width = 15;
     this.pacman.body.height = 15;
-    this.startCheckPathTimer();
+
+    this.checkPathTimer.start();
 }
 
+JackDanger.Zhedar_PacJack.prototype.despawnPacman = function() {
+    this.pacman.exists = false;
+
+    //clear any open spawn events, so we won't have too much trouble
+    game.time.events.remove(this.spawnEvent);
+}
+
+JackDanger.Zhedar_PacJack.prototype.respawnPacman = function(x, y) {
+    //this.pacman.body.x = x;
+    //this.pacman.body.y = y;
+    this.pacman.exists = true;
+    this.pacman.bringToTop();
+    this.pacman.reset(x,y,1);
+}
+
+
 JackDanger.Zhedar_PacJack.prototype.createSeeds = function() {
-     this.seedCount = 0;
+    this.seedCount = 0;
 
     this.seeds = game.add.group();
     this.seeds.enableBody = true;
@@ -141,12 +165,6 @@ JackDanger.Zhedar_PacJack.prototype.createSeeds = function() {
     this.seeds.setAll('outOfBoundsKill', true);
 }
 
-JackDanger.Zhedar_PacJack.prototype.despawnPacman = function() {
-    this.pacman.kill();
-    //clear any open spawn events, so we won't have too much trouble
-    game.time.events.remove(this.spawnEvent);
-}
-
 JackDanger.Zhedar_PacJack.prototype.createStage = function() {
     this.bricks = this.map.createLayer('Walls_' + this.stage);
     game.physics.enable(this.bricks);
@@ -155,6 +173,9 @@ JackDanger.Zhedar_PacJack.prototype.createStage = function() {
     this.cherries = this.createFromObjectLayer(4, 'cherries');
     this.stairsDown = this.createFromObjectLayer(10, 'stairs_down');
     this.stairsUp = this.createFromObjectLayer(11, 'stairs_up');
+    this.doors = this.createFromObjectLayer(12, 'locked_door');
+    for(i = 0; i <  this.doors.children.length; i++)
+        this.doors.children[i].body.immovable = true;
 
     if(this.player) //if this is a stage change, the player should be over ground tiles
         this.player.bringToTop();
@@ -164,7 +185,7 @@ JackDanger.Zhedar_PacJack.prototype.createStage = function() {
 
     this.setupPathfindingData();
 
-    this.map.setCollision([2, 3, 4, 5, 7 ,8 , 9, 10, 11], true, this.bricks);
+    this.map.setCollision([2, 3, 4, 5, 7 ,8 , 9, 10, 11, 12], true, this.bricks);
 }
 
 JackDanger.Zhedar_PacJack.prototype.removeCollected = function(group) {
@@ -179,9 +200,11 @@ JackDanger.Zhedar_PacJack.prototype.clearStage = function() {
     this.keys.destroy();
     this.cherries.destroy();
     this.stairsDown.destroy();
+    this.stairsUp.destroy();
+    this.doors.destroy();
 }
 
-JackDanger.Zhedar_PacJack.prototype.checkPath = function() {
+JackDanger.Zhedar_PacJack.prototype.checkPath = function() {;
     var pacman = this.pacman;
     var player = this.player;
 
@@ -256,7 +279,7 @@ JackDanger.Zhedar_PacJack.prototype.changePacmanMovement = function() {
 JackDanger.Zhedar_PacJack.prototype.doCollision = function() {
     game.physics.arcade.collide(this.player, this.bricks, null, null, this);
     game.physics.arcade.collide(this.player, this.pacman, this.loseCollision, null, this);
-    //game.physics.arcade.collide(this.pacman, this.bricks, this.pacManHitsABrick, null, this);
+    game.physics.arcade.collide(this.player, this.doors, this.playerHitsDoor, null, this);
 
     game.physics.arcade.overlap(this.player, this.keys, this.playerCollectsKey, null, this);
     game.physics.arcade.overlap(this.player, this.cherries, this.playerCollectsCherry, null, this);
@@ -319,6 +342,11 @@ JackDanger.Zhedar_PacJack.prototype.loseCollision = function(obj1, obj2) {
     onLose();
 }
 
+JackDanger.Zhedar_PacJack.prototype.playerHitsDoor = function(player, door) {
+    if(player.hasKey)
+        onVictory();
+}
+
 JackDanger.Zhedar_PacJack.prototype.playerCollectsCherry = function(player, object) {
     this.seedCount += 2;
     this.seedCountText.setText(this.seedCount + "x");
@@ -348,14 +376,20 @@ JackDanger.Zhedar_PacJack.prototype.playerUsesStairsUp = function(player, object
 
 JackDanger.Zhedar_PacJack.prototype.playerUsesStairs = function(direction) {
     this.stage = this.stage + direction;
+    this.player.body.y += direction * 15;
     this.clearStage();
     this.despawnPacman();
 
     this.createStage();
-    var currentX = this.player.x;
-        currentY = this.player.y;
-    
-    this.spawnEvent = game.time.events.add(Phaser.Timer.SECOND * this.pacman.path.length/5 , function(){this.spawnPacman(currentX, currentY)}, this);
+    var currentX = this.player.body.x;
+        currentY = this.player.body.y;
+    logInfo(currentX + ", " + currentY);
+
+    //calculate how far away pacman is from the player or if he isn't spawned, set a static time
+    var respawnTime = this.pacman.exists ? (this.pacman.path.length/5) : 2;
+
+    this.spawnEvent = game.time.events.add(Phaser.Timer.SECOND * respawnTime, function(){this.respawnPacman(currentX, currentY)}, this);
+
 }
 
 JackDanger.Zhedar_PacJack.prototype.updateEnergy = function() {
@@ -385,12 +419,6 @@ JackDanger.Zhedar_PacJack.prototype.setupPathfindingData = function() {
     this.easystar.setAcceptableTiles([-1, 6]);
     this.easystar.enableDiagonals();
     this.easystar.disableCornerCutting();
-}
-
-JackDanger.Zhedar_PacJack.prototype.startCheckPathTimer = function() {
-    var checkPathTimer = game.time.create(false);
-    checkPathTimer.loop(40, this.checkPath, this);
-    checkPathTimer.start();
 }
 
 
@@ -467,6 +495,4 @@ JackDanger.Zhedar_PacJack.prototype.playerControls = function() {
 
     if(walks)
         this.player.animations.play("walk");
-  
-
 }
