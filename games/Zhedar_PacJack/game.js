@@ -101,6 +101,8 @@ JackDanger.Zhedar_PacJack.prototype.mycreate = function() {
     this.player.hasKey = false;
     game.physics.enable(this.player, Phaser.Physics.ARCADE);
     this.player.body.collideWorldBounds = true;
+    this.player.body.width = 12;
+    this.player.body.height = 12;
 
     this.energyText = game.add.bitmapText(100, 430, "white", "Energie: " + this.player.energy, 30);
     this.energyText.anchor.set(0.5);
