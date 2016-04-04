@@ -117,9 +117,9 @@ JackDanger.Zhedar_PacJack.prototype.mycreate = function() {
 
 
     this.checkPathTimer = game.time.create(false);
-    this.checkPathTimer.loop(40, this.checkPath, this);
+    this.checkPathTimer.loop(60, this.checkPath, this);
 
-    this.spawnPacman(700, 120);
+    this.spawnPacman(700, 160);
 }
 
 JackDanger.Zhedar_PacJack.prototype.spawnPacman = function(x, y) {
@@ -135,6 +135,7 @@ JackDanger.Zhedar_PacJack.prototype.spawnPacman = function(x, y) {
     this.pacman.next.y = this.pacman.body.y;
     this.pacman.body.width = 15;
     this.pacman.body.height = 15;
+    this.pacman.body.immovable = true;
 
     this.checkPathTimer.start();
 }
@@ -341,7 +342,8 @@ JackDanger.Zhedar_PacJack.prototype.createFromObjectLayer = function(gid, key) {
 }
 
 JackDanger.Zhedar_PacJack.prototype.loseCollision = function(obj1, obj2) {
-    onLose();
+    if(this.pacman.stunTime == 0)
+        onLose();
 }
 
 JackDanger.Zhedar_PacJack.prototype.playerHitsDoor = function(player, door) {
