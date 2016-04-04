@@ -466,7 +466,27 @@ JackDanger.Zhedar_PacJack.prototype.playerControls = function() {
         speed*=2;
     }
 
-    if (Pad.isDown(Pad.LEFT)) {
+    if(Pad.isDown(Pad.LEFT) && Pad.isDown(Pad.UP)) {
+         this.player.body.velocity.x = -1*speed/2;
+         this.player.body.velocity.y = -1*speed/2;
+         this.player.angle= 135;
+    }
+    else if(Pad.isDown(Pad.LEFT) && Pad.isDown(Pad.DOWN)) {
+         this.player.body.velocity.x = -1*speed/2;
+         this.player.body.velocity.y = speed/2;
+         this.player.angle= 45;
+    }
+    else if(Pad.isDown(Pad.RIGHT) && Pad.isDown(Pad.UP)) {
+         this.player.body.velocity.x = speed/2;
+         this.player.body.velocity.y = -1*speed/2;
+         this.player.angle= 225;
+    }
+    else if(Pad.isDown(Pad.RIGHT) && Pad.isDown(Pad.DOWN)) {
+         this.player.body.velocity.x = speed/2;
+         this.player.body.velocity.y = speed/2;
+         this.player.angle= 315;
+    }
+    else if (Pad.isDown(Pad.LEFT)) {
         this.player.body.velocity.x = -1*speed;
         this.player.body.velocity.y = 0;
         this.player.angle= 90;
