@@ -432,23 +432,41 @@ JackDanger.Zhedar_PacJack.prototype.fireSeed = function(bulletSpeed) {
 
     var seed = this.seeds.getFirstDead();
 
-    seed.reset(this.player.x, this.player.y);
+    seed.reset(this.player.x-5, this.player.y-3);
     seed.body.velocity.x = 0;
     seed.body.velocity.y = 0;
 
+    
     switch(this.player.angle) {
-        case 90:
+        case 90: //left
             seed.body.velocity.x = -1 * bulletSpeed;
             break;
-        case -90:
+        case 45: //left-down
+            seed.body.velocity.x = -1 * bulletSpeed/2;
+            seed.body.velocity.y =  1 * bulletSpeed/2;
+            break;
+        case -90: //right
             seed.body.velocity.x = bulletSpeed;
             break;
-        case -180:
+        case -45: //right-down
+            seed.body.velocity.x = bulletSpeed/2;
+            seed.body.velocity.y = bulletSpeed/2;
+            break;
+        case -180: //up
             seed.body.velocity.y = -1*bulletSpeed;
             break;
-        case 0:
+        case 135: //left-up
+            seed.body.velocity.x = -1 * bulletSpeed/2;
+            seed.body.velocity.y = -1*bulletSpeed/2;
+            break;
+        case -135: //right-up
+            seed.body.velocity.x = bulletSpeed/2;
+            seed.body.velocity.y = -1*bulletSpeed/2;
+            break;
+        case 0: //down
             seed.body.velocity.y = bulletSpeed;
             break;
+            
     }
 
     game.add.audio('shoot_sfx').play();
