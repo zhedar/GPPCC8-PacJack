@@ -44,6 +44,7 @@ JackDanger.Zhedar_PacJack.prototype.preload = function() {
     game.load.audio('hit2_sfx', 'hit2.mp3');
     game.load.audio('hit3_sfx', 'hit3.mp3');
     game.load.audio('pacmanHit_sfx', 'pacmanHit.mp3');
+    game.load.audio('pacmusic', 'pacmusic.mp3')
     
     this.id = currentGameData.id;   
 }
@@ -120,6 +121,9 @@ JackDanger.Zhedar_PacJack.prototype.mycreate = function() {
     this.checkPathTimer.loop(60, this.checkPath, this);
 
     this.spawnPacman(700, 160);
+
+    this.music =  game.add.audio('pacmusic');
+    this.music.play();
 }
 
 JackDanger.Zhedar_PacJack.prototype.spawnPacman = function(x, y) {
@@ -342,8 +346,10 @@ JackDanger.Zhedar_PacJack.prototype.createFromObjectLayer = function(gid, key) {
 }
 
 JackDanger.Zhedar_PacJack.prototype.loseCollision = function(obj1, obj2) {
-    if(this.pacman.stunTime == 0)
+    if(this.pacman.stunTime == 0) {
         onLose();
+        this.music.stop();
+    }
 }
 
 JackDanger.Zhedar_PacJack.prototype.playerHitsDoor = function(player, door) {
