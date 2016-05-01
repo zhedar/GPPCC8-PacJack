@@ -13,6 +13,7 @@ JackDanger.Zhedar_PacJack.prototype.init = function() {
 }
 
 JackDanger.Zhedar_PacJack.prototype.preload = function() {
+    this.game.stage.backgroundColor = "black";
     this.load.path = 'games/' + currentGameData.id + '/assets/';//nicht anfassen
 
     game.load.tilemap('tilemap', 'pacjack.json', null, Phaser.Tilemap.TILED_JSON);
@@ -118,7 +119,7 @@ JackDanger.Zhedar_PacJack.prototype.mycreate = function() {
 
 
     this.checkPathTimer = game.time.create(false);
-    this.checkPathTimer.loop(60, this.checkPath, this);
+    this.checkPathTimer.loop(20, this.checkPath, this);
 
     this.spawnPacman(700, 160);
 
@@ -253,8 +254,8 @@ JackDanger.Zhedar_PacJack.prototype.setBodyProperties = function(sprite, factorX
 
 JackDanger.Zhedar_PacJack.prototype.changePacmanMovement = function() {
     var pacman = this.pacman;
-    var pacmanX = this.pacman.body.x;
-        pacmanY = this.pacman.body.y;
+    var pacmanX = pacman.body.x;
+        pacmanY = pacman.body.y;
 
     if(pacman.stunTime > 0) {
         pacman.stunTime--;
@@ -489,7 +490,7 @@ JackDanger.Zhedar_PacJack.prototype.playerControls = function() {
 
     if(Pad.isDown(Pad.JUMP) && this.player.energy > 10) {
         this.player.energy-=10;
-        speed*=2;
+        speed*=1.75;
     }
 
     if(Pad.isDown(Pad.LEFT) && Pad.isDown(Pad.UP)) {
